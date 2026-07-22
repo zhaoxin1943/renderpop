@@ -21,17 +21,22 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name}: Free AI Image Generator - No Sign Up`,
+    default: `${siteConfig.name}: Free AI Generator — AI Image, Video & Photo to Dance, No Login`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
   keywords: [
     "free ai image generator",
+    "free ai video generator",
+    "image to video generator",
+    "photo to dance ai free",
     "ai image generator free no sign up",
+    "ai video generator no login",
     "generador de imagenes de ia gratis sin registro",
     "free ai generator",
     "no login ai generator",
+    "ai photo animation free",
   ],
   alternates: {
     canonical: "/",
@@ -41,11 +46,16 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: `${siteConfig.name}: Free AI Image Generator - No Sign Up`,
+    title: `${siteConfig.name}: Free AI Image & Video Generator — No Sign Up`,
     description: siteConfig.description,
     url: "/",
     siteName: siteConfig.name,
     type: "website",
+  },
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/apple-icon.png",
   },
 };
 

@@ -16,6 +16,14 @@ const nextConfig: NextConfig = {
         hostname: "s3.us-east-2.amazonaws.com",
         pathname: "/renderpop-assets/**",
       },
+      {
+        protocol: "https",
+        hostname: "renderpop-assets.s3.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.s3.amazonaws.com",
+      },
     ],
   },
   async rewrites() {

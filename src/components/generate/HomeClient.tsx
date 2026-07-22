@@ -4,7 +4,9 @@ import { useCallback, useState } from "react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { ShowcaseSection } from "@/components/home/ShowcaseSection";
 import { PricingPreviewSection } from "@/components/home/PricingPreviewSection";
+import { ReviewSection } from "@/components/home/ReviewSection";
 import { FaqSection } from "@/components/home/FaqSection";
+import { SeoLinksSection } from "@/components/home/SeoLinksSection";
 import type { ShowcaseItem } from "@/lib/types";
 
 export function HomeClient() {
@@ -37,8 +39,14 @@ export function HomeClient() {
       {/* 3. Restrained Pricing Matrix */}
       <PricingPreviewSection />
 
-      {/* 4. Single-Hairline Separator FAQ */}
+      {/* 4. Rich Social Proof & Keyword Reviews */}
+      <ReviewSection />
+
+      {/* 5. Single-Hairline Separator FAQ */}
       <FaqSection />
+
+      {/* 6. Structural Internal Link Mesh */}
+      <SeoLinksSection />
     </div>
   );
 }

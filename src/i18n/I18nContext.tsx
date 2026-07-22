@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import type { Locale } from "./config";
 import { defaultLocale } from "./config";
 import en from "./dictionaries/en.json";
@@ -14,13 +14,6 @@ const dictionaries: Record<Locale, Dictionary> = {
 };
 
 type TranslationNode = string | { [key: string]: TranslationNode };
-
-function getInitialLocale(): Locale {
-  if (typeof window === "undefined") return defaultLocale;
-  const saved = localStorage.getItem("renderpop_locale") as Locale;
-  if (saved === "en" || saved === "es") return saved;
-  return navigator.language.slice(0, 2) === "es" ? "es" : defaultLocale;
-}
 
 function lookupTranslation(dictionary: Dictionary, keyPath: string): string | undefined {
   const value = keyPath.split(".").reduce<TranslationNode | undefined>((current, key) => {
@@ -40,7 +33,21 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
+  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("renderpop_locale") as Locale;
+    let initial: Locale = defaultLocale;
+    if (saved === "en" || saved === "es") {
+      initial = saved;
+    } else if (navigator.language.slice(0, 2) === "es") {
+      initial = "es";
+    }
+    if (initial !== defaultLocale) {
+      setLocaleState(initial);
+      document.documentElement.lang = initial;
+    }
+  }, []);
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
