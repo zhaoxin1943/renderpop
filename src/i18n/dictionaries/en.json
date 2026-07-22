@@ -1,0 +1,96 @@
+{
+  "common": {
+    "siteName": "RenderPop",
+    "signIn": "Sign In",
+    "getStarted": "Get Started Free",
+    "tryItFree": "Try It Free",
+    "noCreditCard": "No credit card required",
+    "noSignUpNeeded": "No Sign Up Required",
+    "freeDailyFast": "Free Daily Fast Generations"
+  },
+  "nav": {
+    "create": "Create",
+    "explore": "Explore",
+    "pricing": "Pricing",
+    "faq": "FAQ"
+  },
+  "hero": {
+    "title": "Free AI image generator. No sign up needed.",
+    "subtitle": "Turn a prompt into an image in seconds. Start free with Fast, or choose Pro for more detail.",
+    "tabImage": "Image",
+    "inputPlaceholder": "Describe what you want to create...",
+    "modeFast": "Fast (Free)",
+    "modePro": "Pro (12 Credits)",
+    "btnGenerate": "Generate",
+    "btnFreeLabel": "Free",
+    "btnCreditsLabel": "12 Credits"
+  },
+  "showcase": {
+    "eyebrow": "Explore",
+    "title": "See what you can make",
+    "backToCreate": "Create an image",
+    "tryThisStyle": "Try Prompt",
+    "promptInjected": "Prompt Loaded to Studio!"
+  },
+  "whyUs": {
+    "badge": "Tool-First Design",
+    "title": "Built for instant creation",
+    "reason1Title": "No Sign Up Required",
+    "reason1Desc": "Visitors can start creating immediately with free daily Fast generations. No registration or credit card needed.",
+    "reason2Title": "High-detail Pro images",
+    "reason2Desc": "Choose Pro when your prompt needs more texture, control, and polish.",
+    "reason3Title": "High-Precision Fast Engine",
+    "reason3Desc": "Our optimized generation pipeline delivers images in seconds with zero friction."
+  },
+  "pricing": {
+    "badge": "Simple Pricing",
+    "title": "Start for free, scale as you grow",
+    "visitorTitle": "Visitor",
+    "visitorPrice": "$0",
+    "visitorPeriod": "Forever",
+    "visitorFeature1": "2 Fast generations / day",
+    "visitorFeature2": "No sign up required",
+    "visitorFeature3": "Instant queue",
+    "visitorCta": "Start Instant Free",
+
+    "freeUserTitle": "Registered Free",
+    "freeUserPrice": "$0",
+    "freeUserPeriod": "Forever",
+    "freeUserFeature1": "5 Fast generations / day",
+    "freeUserFeature2": "20 Bonus Credits upon sign up",
+    "freeUserFeature3": "Pro mode & history saving",
+    "freeUserCta": "Sign Up Free",
+
+    "creatorTitle": "Creator Plan",
+    "creatorPrice": "$9.99",
+    "creatorPeriod": "per month",
+    "creatorFeature1": "1,000 Monthly Credits",
+    "creatorFeature2": "30 Fast generations / day",
+    "creatorFeature3": "Priority processing queue",
+    "creatorFeature4": "Higher Fast daily limit",
+    "creatorCta": "Upgrade to Creator"
+  },
+  "faq": {
+    "badge": "FAQ",
+    "title": "Frequently Asked Questions",
+    "q1": "Is RenderPop really free to use without signing up?",
+    "a1": "Yes! RenderPop allows visitors to create free AI images instantly without signing up or creating an account. You get 2 free Fast generations per day as a visitor, and 5 per day once registered.",
+    "q2": "What is the difference between Fast and Pro mode?",
+    "a2": "Fast mode is free and optimized for speed. Pro mode uses high-precision models (12 credits) to deliver ultra-detailed, commercial-grade artwork.",
+    "q3": "What can I create with RenderPop?",
+    "a3": "RenderPop currently creates AI images from text prompts. Describe a scene, style, or subject, then refine it with Fast or Pro mode.",
+    "q4": "Do my unused monthly credits rollover?",
+    "a4": "Yes, active subscription credits roll over into your next period, up to 2x your monthly credit allowance."
+  },
+  "footer": {
+    "description": "RenderPop is a focused AI image generator for turning ideas into images without model setup.",
+    "toolsTitle": "Free AI Tools",
+    "toolImageGen": "Free AI Image Generator",
+    "toolNoSignUp": "AI Generator No Sign Up",
+    "linksTitle": "Product",
+    "legalTitle": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© 2026 RenderPop AI. All rights reserved."
+  }
+}

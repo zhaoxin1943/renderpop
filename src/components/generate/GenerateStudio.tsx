@@ -1,7 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
-
+import { startTransition, useCallback, useEffect, useId, useRef, useState } from "react";
+import {
+  IconAlertTriangle,
+  IconArrowUp,
+  IconBolt,
+  IconCrown,
+  IconDownload,
+  IconLoader2,
+} from "@tabler/icons-react";
+import { useI18n } from "@/i18n/I18nContext";
 import { ApiError, apiFetch } from "@/lib/api";
 import {
   ASPECT_RATIOS,
@@ -20,7 +28,6 @@ const TERMINAL = new Set([
 ]);
 
 type StudioProps = {
-  /** Filled when user picks a showcase card. */
   seedPrompt?: string | null;
   seedAspect?: string | null;
   onSeedConsumed?: () => void;
@@ -35,12 +42,12 @@ export function GenerateStudio({
   seedAspect,
   onSeedConsumed,
 }: StudioProps) {
+  const { t } = useI18n();
   const promptId = useId();
   const [prompt, setPrompt] = useState("");
   const [aspect, setAspect] = useState<AspectRatio>(DEFAULT_ASPECT_RATIO);
-  const [entitlements, setEntitlements] = useState<EntitlementsResponse | null>(
-    null,
-  );
+  const [mode, setMode] = useState<"FAST" | "PRO">("FAST");
+  const [entitlements, setEntitlements] = useState<EntitlementsResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [statusLabel, setStatusLabel] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -53,20 +60,30 @@ export function GenerateStudio({
       const data = await apiFetch<EntitlementsResponse>("/me/entitlements");
       setEntitlements(data);
     } catch {
-      // Soft-fail: studio still works; quota label just stays empty.
+      // Soft-fail
     }
   }, []);
 
   useEffect(() => {
-    void loadEntitlements();
+    let active = true;
+    void apiFetch<EntitlementsResponse>("/me/entitlements")
+      .then((data) => {
+        if (active) setEntitlements(data);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
   }, [loadEntitlements]);
 
   useEffect(() => {
     if (seedPrompt) {
-      setPrompt(seedPrompt);
-      if (seedAspect && ASPECT_RATIOS.includes(seedAspect as AspectRatio)) {
-        setAspect(seedAspect as AspectRatio);
-      }
+      startTransition(() => {
+        setPrompt(seedPrompt);
+        if (seedAspect && ASPECT_RATIOS.includes(seedAspect as AspectRatio)) {
+          setAspect(seedAspect as AspectRatio);
+        }
+      });
       onSeedConsumed?.();
       textareaRef.current?.focus();
       textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -86,7 +103,6 @@ export function GenerateStudio({
       if (TERMINAL.has(task.status)) {
         return task;
       }
-      // Prefer server poll endpoint every few ticks to advance provider state.
       if (i > 0 && i % 3 === 0) {
         try {
           await apiFetch<GenerationTaskResponse>(`/generations/${jobId}/poll`, {
@@ -94,7 +110,7 @@ export function GenerateStudio({
             signal,
           });
         } catch {
-          // ignore poll errors; GET path may still work
+          // ignore poll errors
         }
       }
       await sleep(2000);
@@ -120,7 +136,7 @@ export function GenerateStudio({
       const created = await apiFetch<GenerationTaskResponse>("/generations", {
         method: "POST",
         body: {
-          job_type: "FAST_IMAGE",
+          job_type: mode === "FAST" ? "FAST_IMAGE" : "PRO_IMAGE",
           prompt: text,
           aspect_ratio: aspect,
           client_request_id: crypto.randomUUID(),
@@ -142,7 +158,7 @@ export function GenerateStudio({
         setError(
           done.failure_code
             ? `Generation failed (${done.failure_code})`
-            : "Generation failed. Your Fast quota was returned when possible.",
+            : "Generation failed. Your quota was returned when possible.",
         );
         setStatusLabel(done.status.toLowerCase());
       }
@@ -154,10 +170,10 @@ export function GenerateStudio({
       if (err instanceof ApiError) {
         if (err.code === "DAILY_LIMIT_REACHED") {
           setError(
-            "Free daily Fast generations used up. Come back after reset, or sign in for a higher limit.",
+            "Free daily Fast limit reached. Come back after reset, or sign in for a higher quota.",
           );
         } else if (err.code === "AUTH_REQUIRED") {
-          setError("Please refresh and try again (visitor session missing).");
+          setError("Please sign in to use Pro mode or check visitor quota.");
         } else {
           setError(err.message);
         }
@@ -176,116 +192,129 @@ export function GenerateStudio({
   const dailyLimit = entitlements?.fast_image.daily_limit;
 
   return (
-    <section
-      className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6"
-      aria-labelledby="studio-heading"
-    >
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-violet-600">
-            Free AI Image Generator
-          </p>
-          <h2
-            id="studio-heading"
-            className="mt-1 text-lg font-semibold tracking-tight text-zinc-900"
-          >
-            Create an image
-          </h2>
-        </div>
-        <p className="text-sm text-zinc-500">
-          {remaining != null && dailyLimit != null ? (
-            <>
-              <span className="font-medium text-zinc-800">{remaining}</span>
-              {" / "}
-              {dailyLimit} free Fast left today
-            </>
-          ) : (
-            <>Free daily Fast generations</>
-          )}
-        </p>
-      </div>
-
+    <div className="w-full">
       <form onSubmit={onGenerate} className="space-y-4">
-        <div>
+        <div className="relative">
           <label htmlFor={promptId} className="sr-only">
-            Prompt
+            {t("hero.inputPlaceholder")}
           </label>
           <textarea
             ref={textareaRef}
             id={promptId}
-            rows={4}
+            rows={5}
             value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Describe the image you want to create…"
+            onInput={(e) => setPrompt(e.currentTarget.value)}
+            placeholder={t("hero.inputPlaceholder")}
             maxLength={2000}
-            className="w-full resize-y rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm leading-6 text-zinc-900 outline-none ring-violet-500/30 placeholder:text-zinc-400 focus:border-violet-400 focus:bg-white focus:ring-4"
+            className="min-h-36 w-full resize-none border-0 bg-transparent px-0 py-1 text-base leading-relaxed text-white outline-none placeholder:text-zinc-500 focus:ring-0 sm:min-h-40"
             disabled={busy}
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-zinc-500">Ratio</span>
-          {ASPECT_RATIOS.map((ratio) => (
-            <button
-              key={ratio}
-              type="button"
-              disabled={busy}
-              onClick={() => setAspect(ratio)}
-              className={
-                ratio === aspect
-                  ? "rounded-full bg-zinc-900 px-3 py-1 text-xs font-medium text-white"
-                  : "rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-medium text-zinc-600 hover:border-zinc-300"
-              }
-            >
-              {ratio}
-              {ratio === "9:16" ? " · default" : ""}
-            </button>
-          ))}
-        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] pt-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex rounded-lg border border-white/[0.1] bg-[#17171a] p-1">
+              <button
+                type="button"
+                onClick={() => setMode("FAST")}
+                className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition ${
+                  mode === "FAST"
+                    ? "bg-white/[0.1] text-white"
+                    : "text-zinc-500 hover:text-white"
+                }`}
+              >
+                <IconBolt className="size-3.5" stroke={1.9} />
+                {t("hero.modeFast")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("PRO")}
+                className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition ${
+                  mode === "PRO"
+                    ? "bg-[#8e36dc] text-white"
+                    : "text-zinc-500 hover:text-white"
+                }`}
+              >
+                <IconCrown className="size-3.5" stroke={1.75} />
+                {t("hero.modePro")}
+              </button>
+            </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="submit"
-            disabled={busy || !prompt.trim()}
-            className="inline-flex h-11 min-w-[140px] items-center justify-center rounded-full bg-violet-600 px-6 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {busy ? "Generating…" : "Generate"}
-          </button>
-          {busy && statusLabel ? (
-            <span className="text-sm capitalize text-zinc-500">{statusLabel}…</span>
-          ) : null}
+            <div className="flex items-center gap-1 rounded-lg border border-white/[0.1] bg-[#17171a] p-1">
+              {ASPECT_RATIOS.map((ratio) => (
+                <button
+                  key={ratio}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => setAspect(ratio)}
+                  className={`rounded-md px-2.5 py-1.5 text-xs font-medium transition ${
+                    ratio === aspect
+                      ? "bg-white/[0.1] text-white"
+                      : "text-zinc-500 hover:text-white"
+                  }`}
+                >
+                  {ratio}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {remaining != null && dailyLimit != null ? (
+              <span className="hidden text-xs text-zinc-500 sm:inline-block">
+                <strong className="font-medium text-zinc-300">{remaining}</strong> / {dailyLimit} {t("common.freeDailyFast")}
+              </span>
+            ) : <span className="hidden text-xs text-zinc-500 sm:inline-block">{t("common.freeDailyFast")}</span>}
+
+            <button
+              type="submit"
+              disabled={busy || !prompt.trim()}
+              className="brand-cta inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-semibold text-white transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {busy ? (
+                <>
+                  <IconLoader2 className="size-4 animate-spin" stroke={2} />
+                  <span>{statusLabel ?? "Generating"}</span>
+                </>
+              ) : (
+                <>
+                  <span>{t("hero.btnGenerate")}</span>
+                  <IconArrowUp className="size-4" stroke={2} />
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </form>
 
       {error ? (
-        <p
-          className="mt-4 rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700"
-          role="alert"
-        >
+        <div className="mt-4 flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200">
+          <IconAlertTriangle className="mt-0.5 size-4 shrink-0" stroke={1.8} />
           {error}
-        </p>
+        </div>
       ) : null}
 
       {resultUrl ? (
-        <div className="mt-6 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
+        <div className="mt-6 overflow-hidden rounded-xl border border-white/[0.1] bg-[#121215]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={resultUrl}
-            alt="Generated result"
+            alt="Generated Result"
             className="mx-auto max-h-[70vh] w-full object-contain"
           />
-          <div className="flex justify-end gap-2 border-t border-zinc-200 px-3 py-2">
+          <div className="flex justify-end gap-2 border-t border-white/[0.1] px-4 py-2.5">
             <a
               href={resultUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-violet-700 hover:underline"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white"
             >
-              Open full size
+              <IconDownload className="size-3.5" stroke={1.75} />
+              Download full resolution
             </a>
           </div>
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }

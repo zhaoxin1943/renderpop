@@ -1,0 +1,96 @@
+{
+  "common": {
+    "siteName": "RenderPop",
+    "signIn": "Iniciar Sesión",
+    "getStarted": "Empezar Gratis",
+    "tryItFree": "Probar Gratis",
+    "noCreditCard": "Sin tarjeta de crédito",
+    "noSignUpNeeded": "Sin Registro Requerido",
+    "freeDailyFast": "Generaciones Rápidas Gratis al Día"
+  },
+  "nav": {
+    "create": "Crear",
+    "explore": "Explorar",
+    "pricing": "Precios",
+    "faq": "FAQ"
+  },
+  "hero": {
+    "title": "Generador de imágenes con IA gratis. Sin registro.",
+    "subtitle": "Convierte una idea en una imagen en segundos. Empieza gratis con Rápido o elige Pro para más detalle.",
+    "tabImage": "Imagen",
+    "inputPlaceholder": "Describe lo que quieres crear...",
+    "modeFast": "Rápido (Gratis)",
+    "modePro": "Pro (12 Créditos)",
+    "btnGenerate": "Generar",
+    "btnFreeLabel": "Gratis",
+    "btnCreditsLabel": "12 Créditos"
+  },
+  "showcase": {
+    "eyebrow": "Explorar",
+    "title": "Mira lo que puedes crear",
+    "backToCreate": "Crear una imagen",
+    "tryThisStyle": "Usar Idea",
+    "promptInjected": "¡Idea Cargada al Generador!"
+  },
+  "whyUs": {
+    "badge": "Diseño Orientado al Herramienta",
+    "title": "Creado para la creación instantánea",
+    "reason1Title": "Sin Registro Requerido",
+    "reason1Desc": "Los visitantes pueden comenzar a crear de inmediato con generaciones gratuitas. Sin registro ni tarjeta de crédito.",
+    "reason2Title": "Imágenes Pro con más detalle",
+    "reason2Desc": "Elige Pro cuando tu idea necesita más textura, control y acabado.",
+    "reason3Title": "Motor Rápido de Alta Precisión",
+    "reason3Desc": "Nuestra plataforma optimizada entrega imágenes en segundos sin ninguna fricción."
+  },
+  "pricing": {
+    "badge": "Precios Simples",
+    "title": "Empieza gratis, escala cuando quieras",
+    "visitorTitle": "Visitante",
+    "visitorPrice": "$0",
+    "visitorPeriod": "Para Siempre",
+    "visitorFeature1": "2 generaciones rápidas / día",
+    "visitorFeature2": "Sin registro necesario",
+    "visitorFeature3": "Cola instantánea",
+    "visitorCta": "Empezar Gratis Ahora",
+
+    "freeUserTitle": "Registrado Gratis",
+    "freeUserPrice": "$0",
+    "freeUserPeriod": "Para Siempre",
+    "freeUserFeature1": "5 generaciones rápidas / día",
+    "freeUserFeature2": "20 Créditos de Regalo al registrarte",
+    "freeUserFeature3": "Modo Pro e historial guardado",
+    "freeUserCta": "Registrarse Gratis",
+
+    "creatorTitle": "Plan Creador",
+    "creatorPrice": "$9.99",
+    "creatorPeriod": "al mes",
+    "creatorFeature1": "1,000 Créditos Mensuales",
+    "creatorFeature2": "30 generaciones rápidas / día",
+    "creatorFeature3": "Cola de procesamiento prioritaria",
+    "creatorFeature4": "Límite diario Rápido más alto",
+    "creatorCta": "Actualizar a Creador"
+  },
+  "faq": {
+    "badge": "FAQ",
+    "title": "Preguntas Frecuentes",
+    "q1": "¿Es RenderPop realmente gratis sin necesidad de registrarse?",
+    "a1": "¡Sí! RenderPop permite a los visitantes crear imágenes con IA al instante sin registrarse. Obtienes 2 generaciones rápidas gratis al día como visitante.",
+    "q2": "¿Cuál es la diferencia entre el modo Rápido y Pro?",
+    "a2": "El modo Rápido es gratuito y optimizado para velocidad. El modo Pro utiliza modelos de alta precisión (12 créditos) para entregar arte profesional.",
+    "q3": "¿Qué puedo crear con RenderPop?",
+    "a3": "RenderPop crea imágenes con IA a partir de instrucciones de texto. Describe una escena, estilo o sujeto, y ajusta el resultado con el modo Rápido o Pro.",
+    "q4": "¿Mis créditos no utilizados se acumulan?",
+    "a4": "Sí, los créditos de suscripción activa se acumulan para el siguiente período, hasta el doble de tu límite mensual."
+  },
+  "footer": {
+    "description": "RenderPop es un generador de imágenes con IA para convertir ideas en imágenes sin configurar modelos.",
+    "toolsTitle": "Herramientas IA Gratuitas",
+    "toolImageGen": "Generador de Imágenes IA Gratis",
+    "toolNoSignUp": "Generador IA Sin Registro",
+    "linksTitle": "Producto",
+    "legalTitle": "Legal",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos del Servicio",
+    "copyright": "© 2026 RenderPop AI. Todos los derechos reservados."
+  }
+}

@@ -4,78 +4,89 @@ import { HomeClient } from "@/components/generate/HomeClient";
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Free AI Image Generator",
-  description: siteConfig.description,
+  title: "Free AI Image Generator (No Sign Up Required)",
+  description:
+    "Generate AI images instantly with RenderPop. Free daily Fast generations without signing up, plus a high-detail Pro mode.",
   keywords: [
     "free ai image generator",
-    "ai image generator",
-    "text to image",
-    "free daily fast generations",
+    "ai image generator free no sign up",
+    "generador de imagenes de ia gratis sin registro",
+    "free ai generator",
+    "text to image free",
   ],
-  alternates: { canonical: "/" },
+  alternates: {
+    canonical: "/",
+    languages: {
+      "en-US": "/en",
+      "es-ES": "/es",
+    },
+  },
   openGraph: {
-    title: "Free AI Image Generator | RenderPop",
-    description: siteConfig.description,
+    title: "Free AI Image Generator (No Sign Up) | RenderPop",
+    description:
+      "Create images from prompts with free daily Fast generations. No registration or complex model setup required.",
     url: "/",
   },
 };
 
 export default function HomePage() {
+  const webAppSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: siteConfig.name,
+    url: siteConfig.url,
+    applicationCategory: "MultimediaApplication",
+    operatingSystem: "Web",
+    description: siteConfig.description,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Is RenderPop really free to use without signing up?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes! RenderPop allows visitors to create free AI images instantly without signing up or creating an account. You get free daily Fast generations.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is the difference between Fast and Pro mode?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Fast mode is free and optimized for speed. Pro mode uses high-precision models for commercial-grade artwork and maximum detail.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What can I create with RenderPop?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "RenderPop creates AI images from text prompts. Choose Fast for free daily generations or Pro for more detail.",
+        },
+      },
+    ],
+  };
+
   return (
-    <div className="space-y-10">
-      <section className="space-y-3 text-center sm:text-left">
-        <p className="text-xs font-semibold uppercase tracking-widest text-violet-600">
-          {siteConfig.tagline}
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">
-          Free AI Image Generator
-        </h1>
-        <p className="mx-auto max-w-2xl text-base leading-7 text-zinc-600 sm:mx-0">
-          Type a prompt and create. Free daily Fast generations — no model
-          picker, no setup. Default vertical 9:16 for mobile.
-        </p>
-      </section>
-
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <HomeClient />
-
-      <section
-        className="grid gap-4 border-t border-zinc-200 pt-10 sm:grid-cols-3"
-        aria-labelledby="how-heading"
-      >
-        <h2 id="how-heading" className="sr-only">
-          How it works
-        </h2>
-        {[
-          {
-            step: "01",
-            title: "Write a prompt",
-            body: "Describe what you want, or tap an example below the studio.",
-          },
-          {
-            step: "02",
-            title: "Generate with Fast",
-            body: "Uses your free daily Fast quota. We pick the model for you.",
-          },
-          {
-            step: "03",
-            title: "Download & iterate",
-            body: "Refine the prompt and run again while quota remains.",
-          },
-        ].map((item) => (
-          <article
-            key={item.step}
-            className="rounded-xl border border-zinc-200 bg-white p-5"
-          >
-            <span className="text-xs font-semibold text-violet-600">
-              {item.step}
-            </span>
-            <h3 className="mt-1 text-sm font-semibold text-zinc-900">
-              {item.title}
-            </h3>
-            <p className="mt-2 text-sm leading-6 text-zinc-600">{item.body}</p>
-          </article>
-        ))}
-      </section>
-    </div>
+    </>
   );
 }

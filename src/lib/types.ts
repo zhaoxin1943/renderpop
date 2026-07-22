@@ -1,4 +1,4 @@
-/** Shared API shapes — keep in sync with renderpop_server. */
+/** Shared API shapes - keep in sync with renderpop_server. */
 
 export type TaskType = "FAST_IMAGE" | "PRO_IMAGE";
 

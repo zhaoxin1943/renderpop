@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafafa;
-  --foreground: #18181b;
+  --background: #050505;
+  --foreground: #fafafa;
+  --surface: #121215;
+  --surface-raised: #18181b;
+  --line: rgba(255, 255, 255, 0.1);
+  --text-muted: #a1a1aa;
+  --brand-violet: #6d28d9;
+  --brand-magenta: #d946a7;
+  --brand-coral: #fb5267;
 }
 
 @theme inline {
@@ -16,4 +23,53 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+.brand-cta {
+  background: linear-gradient(104deg, var(--brand-violet) 0%, var(--brand-magenta) 57%, var(--brand-coral) 100%);
+}
+
+.brand-signal {
+  background: linear-gradient(90deg, var(--brand-violet), var(--brand-magenta), var(--brand-coral));
+}
+
+::selection {
+  background: #8e36dc;
+  color: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #050505;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

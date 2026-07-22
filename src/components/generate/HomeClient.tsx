@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useState } from "react";
-
-import { GenerateStudio } from "@/components/generate/GenerateStudio";
-import { ShowcaseGrid } from "@/components/generate/ShowcaseGrid";
+import { HeroSection } from "@/components/home/HeroSection";
+import { ShowcaseSection } from "@/components/home/ShowcaseSection";
+import { PricingPreviewSection } from "@/components/home/PricingPreviewSection";
+import { FaqSection } from "@/components/home/FaqSection";
 import type { ShowcaseItem } from "@/lib/types";
 
 export function HomeClient() {
@@ -14,6 +15,7 @@ export function HomeClient() {
 
   const onTry = useCallback((item: ShowcaseItem) => {
     setSeed({ prompt: item.prompt, aspect: item.aspect_ratio });
+    document.getElementById("create")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
   const onSeedConsumed = useCallback(() => {
@@ -21,27 +23,22 @@ export function HomeClient() {
   }, []);
 
   return (
-    <div className="space-y-12">
-      <GenerateStudio
+    <div className="min-h-screen bg-[#050505] text-white">
+      {/* 1. Tool-First Hero Console Section */}
+      <HeroSection
         seedPrompt={seed?.prompt}
         seedAspect={seed?.aspect}
         onSeedConsumed={onSeedConsumed}
       />
 
-      <section aria-labelledby="showcase-heading" className="space-y-4">
-        <div className="space-y-1">
-          <h2
-            id="showcase-heading"
-            className="text-lg font-semibold tracking-tight text-zinc-900"
-          >
-            Get inspired
-          </h2>
-          <p className="text-sm text-zinc-500">
-            Tap any image to fill the prompt and try free daily Fast generations.
-          </p>
-        </div>
-        <ShowcaseGrid onTry={onTry} />
-      </section>
+      {/* 2. Seamless Interactive Showcase Grid */}
+      <ShowcaseSection onTry={onTry} />
+
+      {/* 3. Restrained Pricing Matrix */}
+      <PricingPreviewSection />
+
+      {/* 4. Single-Hairline Separator FAQ */}
+      <FaqSection />
     </div>
   );
 }
