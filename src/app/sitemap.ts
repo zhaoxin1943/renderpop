@@ -10,7 +10,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/ai-video-generator",
     "/image-to-video",
     "/pricing",
-    "/features/photo-to-dance",
     "/features/photo-animation",
     "/features/ai-avatar",
   ];

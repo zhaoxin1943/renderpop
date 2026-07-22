@@ -5,30 +5,30 @@ import Link from "next/link";
 export function SeoLinksSection() {
   const categories = [
     {
-      title: "Core AI Generators",
+      title: "Create with RenderPop",
       links: [
-        { label: "Free AI Image Generator", href: "/ai-image-generator" },
+        { label: "AI Image Generator", href: "/ai-image-generator" },
         { label: "AI Video Generator", href: "/ai-video-generator" },
         { label: "Image to Video AI", href: "/image-to-video" },
         { label: "Text to Image Online", href: "/ai-image-generator#create" },
       ],
     },
     {
-      title: "Popular Features",
+      title: "Video creation",
       links: [
-        { label: "Photo to Dance AI Free", href: "/features/photo-to-dance" },
-        { label: "AI Photo Animation", href: "/features/photo-animation" },
-        { label: "AI Avatar Generator", href: "/features/ai-avatar" },
-        { label: "Anime Art Generator", href: "/features/anime-art" },
+        { label: "Text to Video", href: "/ai-video-generator#create" },
+        { label: "Image to Video", href: "/image-to-video#create" },
+        { label: "AI Motion Generator", href: "/ai-video-generator#create" },
+        { label: "AI Photo Animation", href: "/image-to-video#create" },
       ],
     },
     {
-      title: "Free & No Sign-Up Tools",
+      title: "Image creation",
       links: [
         { label: "AI Image Generator No Sign Up", href: "/ai-image-generator" },
-        { label: "AI Video Generator No Login", href: "/ai-video-generator" },
-        { label: "Free Daily Fast Quota", href: "/#pricing" },
-        { label: "Instant Photo Animator", href: "/image-to-video" },
+        { label: "Free Daily Fast Generations", href: "/#pricing" },
+        { label: "AI Art Generator", href: "/ai-image-generator#create" },
+        { label: "Text to Image", href: "/ai-image-generator#create" },
       ],
     },
   ];
@@ -48,7 +48,7 @@ export function SeoLinksSection() {
                   <li key={idx}>
                     <Link
                       href={link.href}
-                      className="text-xs text-zinc-400 transition hover:text-emerald-400 hover:underline"
+                      className="text-xs text-zinc-400 transition hover:text-[#ec5c83] hover:underline"
                     >
                       {link.label}
                     </Link>

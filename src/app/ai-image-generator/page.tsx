@@ -3,7 +3,7 @@ import { HomeClient } from "@/components/generate/HomeClient";
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Free AI Image Generator — No Sign Up Required",
+  title: "Free AI Image Generator - No Sign Up Required",
   description:
     "Generate stunning AI images instantly with RenderPop. Free daily Fast generations with no login or registration needed. High quality AI art generator.",
   keywords: [
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     canonical: "/ai-image-generator",
   },
   openGraph: {
-    title: "Free AI Image Generator — No Sign Up | RenderPop",
+    title: "Free AI Image Generator - No Sign Up | RenderPop",
     description:
       "Create high quality AI art and images with free daily Fast generations. No registration or complex setup required.",
     url: "/ai-image-generator",

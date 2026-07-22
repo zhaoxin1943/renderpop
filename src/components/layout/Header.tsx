@@ -2,11 +2,29 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { IconLogout2, IconUserCircle } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { useI18n } from "@/i18n/I18nContext";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
 export function Header() {
   const { t } = useI18n();
+  const router = useRouter();
+  const { user, isLoading, signOut } = useAuth();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  async function handleSignOut() {
+    setIsSigningOut(true);
+    try {
+      await signOut();
+      router.replace("/");
+      router.refresh();
+    } finally {
+      setIsSigningOut(false);
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.07] bg-[#050505]/92 backdrop-blur-xl">
@@ -45,12 +63,40 @@ export function Header() {
           <div className="ml-1 sm:ml-3">
             <LanguageSwitcher />
           </div>
-          <Link
-            href="/sign-in"
-            className="ml-2 rounded-lg border border-white/15 px-3 py-1.5 text-xs font-medium text-white transition hover:border-white/30 hover:bg-white/[0.06] sm:px-4 sm:text-sm"
-          >
-            {t("common.signIn")}
-          </Link>
+          {user ? (
+            <div className="ml-2 flex items-center gap-1.5">
+              <Link
+                href="/account"
+                aria-label={t("auth.account")}
+                className="flex size-9 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/[0.06] text-zinc-200 transition hover:border-white/30 hover:text-white"
+              >
+                {user.avatar_url ? (
+                  // Google avatars are external and should not be optimized by Next here.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={user.avatar_url} alt="" className="size-full object-cover" referrerPolicy="no-referrer" />
+                ) : (
+                  <IconUserCircle size={21} />
+                )}
+              </Link>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                disabled={isSigningOut}
+                aria-label={t("auth.signOut")}
+                className="hidden size-9 items-center justify-center rounded-lg text-zinc-400 transition hover:bg-white/[0.06] hover:text-white disabled:cursor-wait sm:flex"
+              >
+                <IconLogout2 size={17} className={isSigningOut ? "animate-pulse" : ""} />
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/sign-in"
+              aria-busy={isLoading}
+              className="ml-2 rounded-lg border border-white/15 px-3 py-1.5 text-xs font-medium text-white transition hover:border-white/30 hover:bg-white/[0.06] sm:px-4 sm:text-sm"
+            >
+              {t("common.signIn")}
+            </Link>
+          )}
         </nav>
       </div>
     </header>

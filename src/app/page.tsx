@@ -4,14 +4,15 @@ import { HomeClient } from "@/components/generate/HomeClient";
 import { siteConfig } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Free AI Image Generator (No Sign Up Required)",
+  title: "AI Image & Video Generator",
   description:
-    "Generate AI images instantly with RenderPop. Free daily Fast generations without signing up, plus a high-detail Pro mode.",
+    "Create AI images from prompts, or turn a prompt or still image into an AI video. Fast image generations are free daily.",
   keywords: [
     "free ai image generator",
-    "ai image generator free no sign up",
-    "generador de imagenes de ia gratis sin registro",
-    "free ai generator",
+    "ai video generator",
+    "image to video generator",
+    "generador de imagenes de ia",
+    "ai image generator",
     "text to image free",
   ],
   alternates: {
@@ -22,9 +23,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Free AI Image Generator (No Sign Up) | RenderPop",
+    title: "AI Image & Video Generator | RenderPop",
     description:
-      "Create images from prompts with free daily Fast generations. No registration or complex model setup required.",
+      "Create images from prompts, then turn a prompt or a still image into a video without model setup.",
     url: "/",
   },
 };
@@ -51,10 +52,10 @@ export default function HomePage() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "Is RenderPop really free to use without signing up?",
+        name: "Which RenderPop creations are free?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes! RenderPop allows visitors to create free AI images instantly without signing up or creating an account. You get free daily Fast generations.",
+          text: "Fast image generation includes a daily free allowance. Video creation uses credits and requires sign-in.",
         },
       },
       {
@@ -70,7 +71,7 @@ export default function HomePage() {
         name: "What can I create with RenderPop?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "RenderPop creates AI images from text prompts. Choose Fast for free daily generations or Pro for more detail.",
+          text: "RenderPop creates AI images from text prompts, plus videos from a prompt or a still image. Image-to-video output keeps the source image ratio.",
         },
       },
     ],

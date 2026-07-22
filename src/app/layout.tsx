@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 import { siteConfig } from "@/lib/config";
 import { I18nProvider } from "@/i18n/I18nContext";
 
@@ -21,22 +22,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name}: Free AI Generator — AI Image, Video & Photo to Dance, No Login`,
+    default: `${siteConfig.name}: AI Image & Video Generator`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
   keywords: [
     "free ai image generator",
-    "free ai video generator",
+    "ai video generator",
     "image to video generator",
-    "photo to dance ai free",
-    "ai image generator free no sign up",
-    "ai video generator no login",
-    "generador de imagenes de ia gratis sin registro",
-    "free ai generator",
-    "no login ai generator",
-    "ai photo animation free",
+    "ai image generator",
+    "generador de imagenes de ia",
+    "text to video generator",
+    "ai photo animation",
   ],
   alternates: {
     canonical: "/",
@@ -46,7 +44,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: `${siteConfig.name}: Free AI Image & Video Generator — No Sign Up`,
+    title: `${siteConfig.name}: AI Image & Video Generator`,
     description: siteConfig.description,
     url: "/",
     siteName: siteConfig.name,
@@ -71,9 +69,11 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col bg-[#050505] text-[#fafafa]">
         <I18nProvider>
-          <Header />
-          <main className="w-full flex-1">{children}</main>
-          <Footer />
+          <AuthProvider>
+            <Header />
+            <main className="w-full flex-1">{children}</main>
+            <Footer />
+          </AuthProvider>
         </I18nProvider>
       </body>
     </html>

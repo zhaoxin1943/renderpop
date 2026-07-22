@@ -43,10 +43,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     } else if (navigator.language.slice(0, 2) === "es") {
       initial = "es";
     }
-    if (initial !== defaultLocale) {
-      setLocaleState(initial);
-      document.documentElement.lang = initial;
-    }
+    document.documentElement.lang = initial;
+    if (initial === defaultLocale) return;
+    const timer = window.setTimeout(() => setLocaleState(initial), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   const setLocale = (newLocale: Locale) => {

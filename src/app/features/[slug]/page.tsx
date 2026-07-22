@@ -7,32 +7,31 @@ const FEATURE_PAGES: Record<
   string,
   { title: string; description: string; keywords: string[] }
 > = {
-  "photo-to-dance": {
-    title: "Photo to Dance AI Free — Make Any Portrait Dance",
+  "image-to-video": {
+    title: "Image to Video AI - Animate a Still Image",
     description:
-      "Transform any portrait photo into a viral dance video clip using RenderPop AI. Unlimited free previews, no sign up required.",
+      "Turn a still image into an AI video with a motion prompt. RenderPop matches the output composition to your source image.",
     keywords: [
-      "photo to dance ai free",
-      "photo dance generator",
-      "make picture dance free",
-      "ai photo dance online",
+      "image to video ai",
+      "animate photo with ai",
+      "image animation generator",
     ],
   },
   "photo-animation": {
-    title: "Free AI Photo Animator — Animate Pictures Online",
+    title: "AI Photo Animator - Animate Pictures Online",
     description:
-      "Bring still images to life with AI motion control and facial animation. Free online photo animator with no login.",
+      "Bring still images to life with a focused AI image-to-video workspace and a prompt for the motion you want.",
     keywords: [
-      "photo animation free",
+      "photo animation",
       "ai photo animator",
       "animate photo online",
       "image animation generator",
     ],
   },
   "ai-avatar": {
-    title: "Free AI Avatar Generator — Create High Detail Avatars",
+    title: "AI Avatar Generator - Create Detailed Avatars",
     description:
-      "Generate custom AI avatars and portraits from simple prompts or reference photos. Fast, free daily generations.",
+      "Generate custom AI avatars and portraits from a prompt. Fast image generation includes a daily free allowance.",
     keywords: [
       "ai avatar generator",
       "free ai avatar creator",
