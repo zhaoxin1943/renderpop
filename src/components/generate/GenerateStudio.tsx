@@ -174,6 +174,30 @@ export function GenerateStudio({
   const [error, setError] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [resultKind, setResultKind] = useState<"image" | "video" | null>(null);
+  const [sheetDragY, setSheetDragY] = useState(0);
+  const touchStartYRef = useRef<number | null>(null);
+
+  const handleSheetTouchStart = (e: React.TouchEvent) => {
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleSheetTouchMove = (e: React.TouchEvent) => {
+    if (touchStartYRef.current === null) return;
+    const deltaY = e.touches[0].clientY - touchStartYRef.current;
+    if (deltaY > 0) {
+      setSheetDragY(deltaY);
+    }
+  };
+
+  const handleSheetTouchEnd = () => {
+    if (sheetDragY > 60) {
+      setImageOptionsOpen(false);
+      setOptionsOpen(false);
+    }
+    touchStartYRef.current = null;
+    setSheetDragY(0);
+  };
+
   const abortRef = useRef<AbortController | null>(null);
   const retainedPreviewUrlsRef = useRef(new Set<string>());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -593,7 +617,7 @@ export function GenerateStudio({
         <button
           type="button"
           onClick={() => selectWorkspace("IMAGE")}
-          className={`relative inline-flex items-center gap-2 px-3 py-3.5 text-sm font-medium transition ${
+          className={`relative inline-flex items-center gap-2 px-3 py-2.5 sm:py-3.5 text-sm font-medium transition ${
             workspace === "IMAGE" ? "text-white" : "text-zinc-500 hover:text-zinc-300"
           }`}
         >
@@ -604,7 +628,7 @@ export function GenerateStudio({
         <button
           type="button"
           onClick={() => selectWorkspace("VIDEO")}
-          className={`relative inline-flex items-center gap-2 px-3 py-3.5 text-sm font-medium transition ${
+          className={`relative inline-flex items-center gap-2 px-3 py-2.5 sm:py-3.5 text-sm font-medium transition ${
             workspace === "VIDEO" ? "text-white" : "text-zinc-500 hover:text-zinc-300"
           }`}
         >
@@ -668,7 +692,7 @@ export function GenerateStudio({
               type="button"
               onClick={() => openImagePicker(isVideo ? "VIDEO" : "IMAGE")}
               disabled={busy || uploading || imageUploading}
-              className={`${variant === "session" ? "session-upload-button" : ""} group relative flex h-28 w-20 flex-col items-center justify-center overflow-hidden rounded-xl border text-xs font-medium transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:h-32 sm:w-24 ${(isVideo ? videoAsset : imageAsset) ? "border-white/[0.16] bg-[#202025]" : "border-dashed border-white/[0.2] bg-white/[0.025] text-zinc-500 hover:border-[#dc499c]/75 hover:bg-[#dc499c]/[0.08] hover:text-zinc-100"}`}
+              className={`${variant === "session" ? "session-upload-button" : ""} group relative flex h-[76px] w-[68px] shrink-0 flex-col items-center justify-center overflow-hidden rounded-xl border text-xs font-medium transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:h-32 sm:w-24 ${(isVideo ? videoAsset : imageAsset) ? "border-white/[0.16] bg-[#202025]" : "border-dashed border-white/[0.2] bg-white/[0.025] text-zinc-500 hover:border-[#dc499c]/75 hover:bg-[#dc499c]/[0.08] hover:text-zinc-100"}`}
               aria-label={(isVideo ? videoAsset : imageAsset) ? t("hero.videoChangeImage") : t("hero.videoUpload")}
             >
               {(isVideo ? videoAsset : imageAsset) ? (
@@ -683,8 +707,8 @@ export function GenerateStudio({
                 <IconLoader2 className="size-5 animate-spin text-zinc-300" stroke={1.8} />
               ) : (
                 <>
-                  <IconUpload className="mb-2 size-5" stroke={1.7} />
-                  <span>{t("hero.videoUpload")}</span>
+                  <IconUpload className="mb-1.5 size-4 sm:mb-2 sm:size-5" stroke={1.7} />
+                  <span className="text-[11px] sm:text-xs">{t("hero.videoUpload")}</span>
                 </>
               )}
             </button>
@@ -712,7 +736,7 @@ export function GenerateStudio({
               onInput={(e) => setPrompt(e.currentTarget.value)}
               placeholder={isVideo ? t("hero.videoPromptPlaceholder") : isImageToImage ? t("hero.imageToImagePromptPlaceholder") : t("hero.inputPlaceholder")}
               maxLength={2000}
-              className="min-h-32 w-full resize-none border-0 bg-transparent px-0 py-1 text-base leading-relaxed text-white outline-none placeholder:text-zinc-500 focus:ring-0 sm:min-h-36"
+              className="h-[76px] max-h-[76px] min-h-0 w-full resize-none border-0 bg-transparent px-0 py-1 text-base leading-relaxed text-white outline-none placeholder:text-zinc-500 focus:ring-0 overflow-y-auto sm:h-auto sm:max-h-none sm:min-h-32 sm:min-h-36"
               disabled={busy}
             />
           </div>
@@ -794,15 +818,24 @@ export function GenerateStudio({
 
                   {imageOptionsOpen ? (
                     <>
-                      <div className="fixed inset-0 z-[60] bg-black/40 sm:bg-transparent" onClick={() => setImageOptionsOpen(false)} />
+                      <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setImageOptionsOpen(false)} />
                       
                       <section
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="image-settings-title"
-                        className="fixed inset-x-3 bottom-3 z-[70] w-auto rounded-2xl border border-white/[0.14] bg-[#16161d]/95 p-4 shadow-[0_25px_70px_rgba(0,0,0,0.85)] backdrop-blur-2xl sm:absolute sm:bottom-full sm:left-0 sm:right-auto sm:top-auto sm:mb-2.5 sm:w-[360px] animate-in fade-in zoom-in-95 duration-150"
+                        className="fixed inset-x-0 bottom-0 z-[70] w-full rounded-t-2xl rounded-b-none border-t border-white/[0.14] bg-[#16161d] p-4 pb-8 shadow-[0_-20px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl sm:absolute sm:bottom-full sm:left-0 sm:right-auto sm:top-auto sm:mb-2.5 sm:w-[360px] sm:rounded-2xl sm:border sm:border-white/[0.14] sm:p-4 sm:pb-4 animate-in slide-in-from-bottom duration-200 sm:zoom-in-95"
+                        style={sheetDragY > 0 ? { transform: `translateY(${sheetDragY}px)`, transition: "none" } : undefined}
                         onClick={(e) => e.stopPropagation()}
                       >
+                        {/* Drag Handle Bar for mobile sheet */}
+                        <div
+                          className="mx-auto mb-3.5 h-1.5 w-12 shrink-0 rounded-full bg-white/25 sm:hidden cursor-grab active:cursor-grabbing touch-none"
+                          onTouchStart={handleSheetTouchStart}
+                          onTouchMove={handleSheetTouchMove}
+                          onTouchEnd={handleSheetTouchEnd}
+                        />
+
                         <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.08]">
                           <h2 id="image-settings-title" className="text-xs font-semibold uppercase tracking-wider text-zinc-300">{t("hero.imageOptionsTitle")}</h2>
                           <button type="button" onClick={() => setImageOptionsOpen(false)} className="inline-flex size-6 items-center justify-center rounded-md text-zinc-400 hover:bg-white/[0.1] hover:text-white transition-colors" aria-label={t("hero.imageCloseOptions")}>
@@ -909,14 +942,23 @@ export function GenerateStudio({
       ) : null}
 
       {optionsOpen ? (
-        <div className="fixed inset-0 z-[60] flex items-end bg-black/65 p-3 sm:items-center sm:justify-center" role="presentation" onMouseDown={() => setOptionsOpen(false)}>
+        <div className="fixed inset-0 z-[60] flex items-end bg-black/60 backdrop-blur-sm p-0 sm:p-3 sm:items-center sm:justify-center animate-in fade-in duration-200" role="presentation" onMouseDown={() => setOptionsOpen(false)}>
           <section
             role="dialog"
             aria-modal="true"
             aria-labelledby="video-settings-title"
-            className="w-full max-w-lg rounded-2xl border border-white/[0.12] bg-[#18181b] p-5 shadow-2xl"
+            className="w-full rounded-t-2xl rounded-b-none border-t border-white/[0.12] bg-[#18181b] p-5 pb-8 shadow-2xl sm:max-w-lg sm:rounded-2xl sm:border sm:border-white/[0.12] animate-in slide-in-from-bottom duration-200"
+            style={sheetDragY > 0 ? { transform: `translateY(${sheetDragY}px)`, transition: "none" } : undefined}
             onMouseDown={(event) => event.stopPropagation()}
           >
+            {/* Drag Handle Bar for mobile sheet */}
+            <div
+              className="mx-auto mb-3.5 h-1.5 w-12 shrink-0 rounded-full bg-white/25 sm:hidden cursor-grab active:cursor-grabbing touch-none"
+              onTouchStart={handleSheetTouchStart}
+              onTouchMove={handleSheetTouchMove}
+              onTouchEnd={handleSheetTouchEnd}
+            />
+
             <div className="flex items-center justify-between">
               <h2 id="video-settings-title" className="text-base font-semibold text-white">{t("hero.videoOptionsTitle")}</h2>
               <button type="button" onClick={() => setOptionsOpen(false)} className="inline-flex size-8 items-center justify-center rounded-lg text-zinc-500 hover:bg-white/[0.07] hover:text-white" aria-label={t("hero.videoCloseOptions")}>

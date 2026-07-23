@@ -173,42 +173,46 @@ body {
   }
 
   .session-composer-shell {
-    bottom: max(0.75rem, env(safe-area-inset-bottom));
-    left: 0.75rem;
-    right: 0.75rem;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .session-composer-shell > div {
-    border-radius: 16px;
+    border-radius: 16px 16px 0 0;
     padding: 1px;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
   }
 
   .session-composer-tabs {
-    min-height: 50px;
+    min-height: 46px;
     padding-inline: 12px;
   }
 
   .session-composer-tabs button {
     gap: 0.5rem;
-    padding: 11px 12px;
-    font-size: 13px;
+    padding: 10px 12px;
+    font-size: 14px;
   }
 
   .session-composer form {
     min-height: 0;
-    padding: 14px 16px 12px;
+    padding: 12px 16px 14px;
   }
 
   .session-composer form > .session-composer-input-row {
-    min-height: 112px;
-    gap: 14px;
+    min-height: 80px;
+    gap: 12px;
   }
 
   .session-composer .session-upload-button {
-    height: 84px;
-    width: 76px;
+    height: 76px;
+    width: 68px;
     border-radius: 12px;
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .session-composer .session-upload-button svg {
@@ -218,15 +222,16 @@ body {
   }
 
   .session-composer form textarea {
-    min-height: 88px;
-    padding-top: 4px;
+    min-height: 76px;
+    height: 76px;
+    padding-top: 2px;
     font-size: 15px;
     line-height: 1.5;
   }
 
   .session-composer-toolbar {
     margin-top: 12px;
-    padding-top: 2px;
+    padding-top: 0;
   }
 
   .session-composer-toolbar .session-composer-controls {
