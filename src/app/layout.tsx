@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { ToastProvider } from "@/components/common/Toast";
 import { siteConfig } from "@/lib/config";
 import { I18nProvider } from "@/i18n/I18nContext";
 
@@ -70,9 +71,11 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col bg-[#050505] text-[#fafafa]">
         <I18nProvider>
           <AuthProvider>
-            <Header />
-            <main className="w-full flex-1">{children}</main>
-            <Footer />
+            <ToastProvider>
+              <Header />
+              <main className="w-full flex-1">{children}</main>
+              <Footer />
+            </ToastProvider>
           </AuthProvider>
         </I18nProvider>
       </body>

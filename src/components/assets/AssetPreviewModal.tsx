@@ -17,7 +17,10 @@ import type { GeneratedAsset } from "@/lib/types";
 type AssetPreviewModalProps = {
   asset: GeneratedAsset | null;
   onClose: () => void;
-  onDeleted: (jobId: string) => void;
+  onDeleted?: (jobId: string) => void;
+  variant?: "detailed" | "lightbox";
+  currentIndex?: number;
+  totalCount?: number;
 };
 
 function formatDateLabel(dateString: string) {
@@ -46,13 +49,19 @@ function formatModelName(asset: GeneratedAsset) {
   return asset.task_type.includes("VIDEO") ? "RenderPop Video" : "RH Fast Image";
 }
 
-export function AssetPreviewModal({ asset, onClose, onDeleted }: AssetPreviewModalProps) {
+export function AssetPreviewModal({
+  asset,
+  onClose,
+  onDeleted,
+  variant = "detailed",
+  currentIndex = 1,
+  totalCount = 1,
+}: AssetPreviewModalProps) {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -96,15 +105,24 @@ export function AssetPreviewModal({ asset, onClose, onDeleted }: AssetPreviewMod
     router.push(`${targetPath}?${params.toString()}`);
   };
 
-
   const handleDownload = async () => {
     try {
       setDownloading(true);
       const ext = isVideo ? "mp4" : "png";
       const downloadFilename = `renderpop-${asset.job_id.slice(0, 8)}.${ext}`;
-      const res = await fetch(`/api/v1/generations/assets/${asset.job_id}/download`);
-      if (!res.ok) throw new Error("Download failed");
-      const blob = await res.blob();
+      let blob: Blob;
+      try {
+        const res = await fetch(`/api/v1/generations/assets/${asset.job_id}/download`);
+        if (res.ok) {
+          blob = await res.blob();
+        } else {
+          const directRes = await fetch(asset.result_url);
+          blob = await directRes.blob();
+        }
+      } catch {
+        const directRes = await fetch(asset.result_url);
+        blob = await directRes.blob();
+      }
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -113,20 +131,19 @@ export function AssetPreviewModal({ asset, onClose, onDeleted }: AssetPreviewMod
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    } catch {
-      window.open(asset.result_url, "_blank");
+    } catch (err) {
+      console.error("Failed to download media:", err);
     } finally {
       setDownloading(false);
     }
   };
-
 
   const handleDelete = async () => {
     setDeleting(true);
     setError(null);
     try {
       await apiFetch(`/generations/assets/${asset.job_id}`, { method: "DELETE" });
-      onDeleted(asset.job_id);
+      onDeleted?.(asset.job_id);
       onClose();
     } catch (cause: unknown) {
       setError(cause instanceof ApiError ? cause.message : "Failed to delete asset.");
@@ -134,6 +151,53 @@ export function AssetPreviewModal({ asset, onClose, onDeleted }: AssetPreviewMod
     }
   };
 
+  if (variant === "lightbox") {
+    return (
+      <div
+        className="fixed inset-0 z-[80] flex items-center justify-center bg-black/95 p-4 backdrop-blur-xl animate-in fade-in duration-150"
+        onClick={onClose}
+        role="dialog"
+        aria-modal="true"
+      >
+        {/* Top Control Bar */}
+        <div className="absolute top-5 left-6 right-6 z-10 flex items-center justify-between font-mono text-xs text-zinc-400">
+          <span>{`${currentIndex} / ${totalCount}`}</span>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex size-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 active:scale-95"
+            aria-label="Close preview"
+          >
+            <IconX className="size-5" stroke={1.8} />
+          </button>
+        </div>
+
+        {/* Media Preview Body */}
+        <div
+          className="relative flex max-h-[88vh] max-w-[92vw] items-center justify-center"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {isVideo ? (
+            <video
+              src={asset.result_url}
+              controls
+              autoPlay
+              loop
+              playsInline
+              className="max-h-[88vh] max-w-[92vw] rounded-2xl object-contain shadow-2xl"
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={asset.result_url}
+              alt={asset.prompt || "Generated asset"}
+              className="max-h-[88vh] max-w-[92vw] rounded-2xl object-contain shadow-2xl select-none"
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

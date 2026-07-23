@@ -57,6 +57,8 @@ export type GenerationTaskResponse = {
   length: number | null;
   resolution: string | null;
   generate_audio: boolean | null;
+  template_id?: string | null;
+  input_asset_id?: string | null;
   result_transfer_status: string | null;
   result_urls: string[] | null;
   input_url: string | null;

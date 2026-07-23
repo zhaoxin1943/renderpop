@@ -6,8 +6,10 @@ import { useRouter } from "next/navigation";
 import {
   IconAlertTriangle,
   IconArrowLeft,
+  IconCheck,
   IconCompass,
   IconCopy,
+  IconDownload,
   IconFolder,
   IconLoader2,
   IconMenu2,
@@ -21,12 +23,15 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useToast } from "@/components/common/Toast";
 import { GenerateStudio } from "@/components/generate/GenerateStudio";
+import { AssetPreviewModal } from "@/components/assets/AssetPreviewModal";
 
 import { apiFetch } from "@/lib/api";
 import type {
   CreationSession,
   CreationSessionListResponse,
+  GeneratedAsset,
   GenerationTaskResponse,
 } from "@/lib/types";
 import type { StudioTaskSubmission } from "@/lib/studio-sessions";
@@ -44,6 +49,7 @@ type SessionTask = {
   completedAt: string | null;
   failureCode: string | null;
   aspectRatio: string | null;
+  rawTask?: GenerationTaskResponse;
 };
 
 type SessionData = {
@@ -66,6 +72,7 @@ function toSessionTask(
     completedAt: task.completed_at,
     failureCode: task.failure_code,
     aspectRatio: task.aspect_ratio ?? null,
+    rawTask: task,
   };
 }
 
@@ -111,11 +118,21 @@ function getAspectClass(aspectRatio?: string | null) {
   }
 }
 
-function TaskPreview({ task, compact = false }: { task: SessionTask; compact?: boolean }) {
+function TaskPreview({
+  task,
+  compact = false,
+  onPreview,
+  onDownload,
+}: {
+  task: SessionTask;
+  compact?: boolean;
+  onPreview?: (task: SessionTask) => void;
+  onDownload?: (task: SessionTask) => void;
+}) {
   const video = isVideoTask(task);
   const mediaClass = compact
     ? "size-[48px] rounded-xl object-cover"
-    : "block max-h-[280px] max-w-[min(100%,360px)] rounded-2xl border border-white/[0.08] bg-[#0c0c0f] object-contain shadow-2xl";
+    : "block max-h-[280px] max-w-[min(100%,360px)] rounded-2xl border border-white/[0.08] bg-[#0c0c0f] object-contain shadow-2xl transition hover:border-white/20 cursor-pointer";
 
   if (compact) {
     if (task.status === "SUCCEEDED" && task.resultUrl) {
@@ -160,11 +177,42 @@ function TaskPreview({ task, compact = false }: { task: SessionTask; compact?: b
 
   // Full-size Main Thread Task View
   if (task.status === "SUCCEEDED" && task.resultUrl) {
-    return video ? (
-      <video className={`${mediaClass} bg-[#111116]`} src={task.resultUrl} controls playsInline preload="metadata" />
-    ) : (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img className={mediaClass} src={task.resultUrl} alt="Generated result" />
+    return (
+      <div className="group/preview relative inline-block max-w-full">
+        {video ? (
+          <video
+            className={`${mediaClass} bg-[#111116]`}
+            src={task.resultUrl}
+            controls
+            playsInline
+            preload="metadata"
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            className={mediaClass}
+            src={task.resultUrl}
+            alt="Generated result"
+            onClick={() => onPreview?.(task)}
+          />
+        )}
+
+        {/* Bottom-right Glassmorphism Download Floating Button */}
+        {onDownload ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDownload(task);
+            }}
+            className="absolute bottom-3 right-3 flex size-9 items-center justify-center rounded-full border border-white/15 bg-black/65 text-white shadow-xl backdrop-blur-md transition hover:scale-105 hover:bg-black/85 active:scale-95"
+            aria-label="Download media"
+            title="Download media"
+          >
+            <IconDownload className="size-4" stroke={1.8} />
+          </button>
+        ) : null}
+      </div>
     );
   }
 
@@ -230,10 +278,63 @@ function TaskPreview({ task, compact = false }: { task: SessionTask; compact?: b
   );
 }
 
-function ThreadTask({ task }: { task: SessionTask }) {
+function ThreadTask({
+  task,
+  onRegenerate,
+  onDeleteTask,
+  onPreview,
+  onDownload,
+}: {
+  task: SessionTask;
+  onRegenerate?: (task: SessionTask) => Promise<void> | void;
+  onDeleteTask?: (jobId: string) => Promise<void> | void;
+  onPreview?: (task: SessionTask) => void;
+  onDownload?: (task: SessionTask) => void;
+}) {
+  const { toast } = useToast();
   const video = isVideoTask(task);
   const failed = task.status === "FAILED" || task.status === "REJECTED";
   const prompt = task.prompt.trim() || (video ? "Animate the reference image." : "Create an image.");
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleRegenerateClick = async () => {
+    if (isRegenerating || !onRegenerate) return;
+    setIsRegenerating(true);
+    try {
+      await onRegenerate(task);
+    } finally {
+      setIsRegenerating(false);
+    }
+  };
+
+  const handleCopyClick = async () => {
+    const textToCopy = task.prompt.trim();
+    if (!textToCopy) return;
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopied(true);
+      toast.success("Prompt Copied", "Copied to clipboard");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Failed to Copy", "Clipboard access denied");
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (isDeleting || !onDeleteTask) return;
+    setIsDeleting(true);
+    try {
+      await onDeleteTask(task.jobId);
+      setConfirmOpen(false);
+    } catch {
+      // Error notification handled by parent handler
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <article className="session-task group w-full py-6 first:pt-0 sm:py-7">
@@ -245,7 +346,7 @@ function ThreadTask({ task }: { task: SessionTask }) {
       </div>
 
       <div className="session-task-preview mt-6">
-        <TaskPreview task={task} />
+        <TaskPreview task={task} onPreview={onPreview} onDownload={onDownload} />
       </div>
 
       <div className="session-task-footer mt-3 flex items-center justify-between gap-4">
@@ -257,14 +358,92 @@ function ThreadTask({ task }: { task: SessionTask }) {
         </span>
 
         <div className="session-task-actions flex items-center gap-2 opacity-80 transition group-hover:opacity-100">
-          <button type="button" className="session-action" aria-label="Enhance result"><IconWand className="size-4" stroke={1.7} /></button>
-          <button type="button" className="session-action" aria-label="Regenerate"><IconRefresh className="size-4" stroke={1.7} /></button>
-          <button type="button" className="session-action" aria-label="Copy prompt"><IconCopy className="size-4" stroke={1.7} /></button>
-          <button type="button" className="session-action" aria-label="Delete task"><IconTrash className="size-4" stroke={1.7} /></button>
+          {/* <button type="button" className="session-action" aria-label="Enhance result"><IconWand className="size-4" stroke={1.7} /></button> */}
+          <button
+            type="button"
+            onClick={() => void handleRegenerateClick()}
+            disabled={isRegenerating}
+            className="session-action disabled:opacity-50"
+            aria-label="Regenerate"
+            title="Regenerate task"
+          >
+            <IconRefresh className={`size-4 ${isRegenerating ? "animate-spin text-fuchsia-400" : ""}`} stroke={1.7} />
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleCopyClick()}
+            className="session-action"
+            aria-label="Copy prompt"
+            title={copied ? "Copied!" : "Copy prompt"}
+          >
+            {copied ? <IconCheck className="size-4 text-emerald-400" stroke={2} /> : <IconCopy className="size-4" stroke={1.7} />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirmOpen(true)}
+            className="session-action hover:text-rose-400 transition"
+            aria-label="Delete task"
+            title="Delete task"
+          >
+            <IconTrash className="size-4" stroke={1.7} />
+          </button>
         </div>
       </div>
 
       {task.failureCode ? <p className="mt-3 text-xs text-rose-300">Generation failed: {task.failureCode}</p> : null}
+
+      {/* Modern Confirmation Modal */}
+      {confirmOpen ? (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md animate-in fade-in duration-150"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => !isDeleting && setConfirmOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-sm overflow-hidden rounded-[24px] border border-white/[0.12] bg-[#121217] p-6 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-all"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top Close Button */}
+            <button
+              type="button"
+              onClick={() => setConfirmOpen(false)}
+              disabled={isDeleting}
+              className="absolute top-4 right-4 inline-flex size-8 items-center justify-center rounded-xl text-zinc-400 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+              aria-label="Close modal"
+            >
+              <IconX className="size-4" stroke={1.8} />
+            </button>
+
+            {/* Title & Body */}
+            <h3 className="text-lg font-bold text-white tracking-wide">Delete</h3>
+            <p className="mt-3 text-sm text-zinc-400 leading-relaxed">
+              Are you sure you want to delete this data?
+            </p>
+
+            {/* Actions */}
+            <div className="mt-7 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                disabled={isDeleting}
+                className="inline-flex h-10 items-center justify-center rounded-xl px-4 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.07] hover:text-white disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleDeleteConfirm()}
+                disabled={isDeleting}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(225,29,72,0.4)] transition hover:bg-rose-500 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60"
+              >
+                {isDeleting ? <IconLoader2 className="size-4 animate-spin" /> : null}
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -334,14 +513,63 @@ function SessionSkeletonLoader() {
 export function CreateWorkspace({ sessionId }: { sessionId?: string }) {
   const router = useRouter();
   const { user, isLoading: authLoading } = useAuth();
+  const { toast } = useToast();
   const [session, setSession] = useState<SessionData | null>(null);
   const [sessions, setSessions] = useState<CreationSession[]>([]);
   const [ready, setReady] = useState(false);
   const [creatingSession, setCreatingSession] = useState(false);
   const [loadingSessionId, setLoadingSessionId] = useState<string | null>(null);
+  const [previewAsset, setPreviewAsset] = useState<GeneratedAsset | null>(null);
   const [mobileSessionsOpen, setMobileSessionsOpen] = useState(false);
   const pollsRef = useRef(new Map<string, number>());
   const taskNodesRef = useRef(new Map<string, HTMLElement>());
+
+  const handlePreviewTask = useCallback((task: SessionTask) => {
+    if (!task.resultUrl) return;
+    setPreviewAsset({
+      job_id: task.jobId,
+      session_id: sessionId ?? null,
+      task_type: task.taskType,
+      model_code: null,
+      prompt: task.prompt,
+      aspect_ratio: task.aspectRatio || "9:16",
+      result_url: task.resultUrl,
+      created_at: task.createdAt,
+      completed_at: task.completedAt,
+    });
+  }, [sessionId]);
+
+  const handleTaskDownload = useCallback(async (task: SessionTask) => {
+    if (!task.resultUrl) return;
+    const video = isVideoTask(task);
+    const ext = video ? "mp4" : "png";
+    const downloadFilename = `renderpop-${task.jobId.slice(0, 8)}.${ext}`;
+    try {
+      let blob: Blob;
+      try {
+        const res = await fetch(`/api/v1/generations/assets/${task.jobId}/download`);
+        if (res.ok) {
+          blob = await res.blob();
+        } else {
+          const directRes = await fetch(task.resultUrl);
+          blob = await directRes.blob();
+        }
+      } catch {
+        const directRes = await fetch(task.resultUrl);
+        blob = await directRes.blob();
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = downloadFilename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to download media:", err);
+    }
+  }, []);
 
   // Fetch user's creation sessions list and active session details
   useEffect(() => {
@@ -451,6 +679,50 @@ export function CreateWorkspace({ sessionId }: { sessionId?: string }) {
     const created = await apiFetch<CreationSession>("/creation-sessions", { method: "POST" });
     return created.id;
   }, []);
+
+  const handleRegenerate = useCallback(async (task: SessionTask) => {
+    const raw = task.rawTask;
+    const taskSessionId = sessionId ?? (await createSessionForTask());
+    const created = await apiFetch<GenerationTaskResponse>("/generations", {
+      method: "POST",
+      body: {
+        job_type: task.taskType,
+        prompt: task.prompt || null,
+        aspect_ratio: task.aspectRatio || raw?.aspect_ratio || "9:16",
+        length: raw?.length ?? undefined,
+        resolution: raw?.resolution ?? undefined,
+        generate_audio: raw?.generate_audio ?? undefined,
+        input_asset_id: raw?.input_asset_id ?? undefined,
+        template_id: raw?.template_id ?? undefined,
+        session_id: taskSessionId,
+        client_request_id: crypto.randomUUID(),
+      },
+      headers: { "Idempotency-Key": crypto.randomUUID() },
+    });
+    onTaskCreated({
+      task: created,
+      prompt: created.prompt || task.prompt,
+      sourcePreviewUrl: task.sourcePreviewUrl ?? created.input_url,
+    });
+  }, [sessionId, createSessionForTask, onTaskCreated]);
+
+  const handleDeleteTask = useCallback(async (jobId: string) => {
+    try {
+      await apiFetch(`/generations/assets/${jobId}`, { method: "DELETE" });
+      setSession((current) => current ? {
+        ...current,
+        tasks: current.tasks.filter((t) => t.jobId !== jobId),
+      } : current);
+      setSessions((current) => current.map((item) => item.id === sessionId ? {
+        ...item,
+        tasks: item.tasks.filter((t) => t.job_id !== jobId),
+      } : item));
+      toast.success("Task deleted", "The task has been removed from this session.");
+    } catch (err) {
+      toast.error("Failed to delete", err instanceof Error ? err.message : "An error occurred while deleting.");
+      throw err;
+    }
+  }, [sessionId, toast]);
 
   const createNewSession = useCallback(async () => {
     setCreatingSession(true);
@@ -642,7 +914,13 @@ export function CreateWorkspace({ sessionId }: { sessionId?: string }) {
                   }}
                   className="scroll-mt-24"
                 >
-                  <ThreadTask task={task} />
+                  <ThreadTask
+                    task={task}
+                    onRegenerate={handleRegenerate}
+                    onDeleteTask={handleDeleteTask}
+                    onPreview={handlePreviewTask}
+                    onDownload={handleTaskDownload}
+                  />
                 </div>
               ))}
             </div>
@@ -668,6 +946,15 @@ export function CreateWorkspace({ sessionId }: { sessionId?: string }) {
           />
         </div>
       </div>
+
+      {/* Lightbox Fullscreen Media Preview Modal */}
+      {previewAsset ? (
+        <AssetPreviewModal
+          asset={previewAsset}
+          variant="lightbox"
+          onClose={() => setPreviewAsset(null)}
+        />
+      ) : null}
     </section>
   );
 }
