@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import {
   IconAlertTriangle,
   IconArrowLeft,
+  IconCompass,
   IconCopy,
   IconFolder,
   IconLoader2,
+  IconPhoto,
   IconPlus,
   IconRefresh,
   IconSparkles,
@@ -145,7 +147,44 @@ function ThreadTask({ task }: { task: SessionTask }) {
   );
 }
 
-export function CreateWorkspace({ sessionId }: { sessionId: string }) {
+/** Creen-style Hero Section for bare /create page */
+function BareCreateHero() {
+  const cards = [
+    { src: "https://s3.us-east-2.amazonaws.com/renderpop-assets/media/showcase/create_card_1.webp", alt: "Create Card 1", rotate: "-rotate-[13deg] translate-y-3 hidden sm:block" },
+    { src: "https://s3.us-east-2.amazonaws.com/renderpop-assets/media/showcase/create_card_2.webp", alt: "Create Card 2", rotate: "-rotate-[6deg] sm:-rotate-[4deg] -translate-y-1" },
+    { src: "https://s3.us-east-2.amazonaws.com/renderpop-assets/media/showcase/create_card_3.webp", alt: "Create Card 3", rotate: "rotate-[6deg] sm:rotate-[4deg] -translate-y-1" },
+    { src: "https://s3.us-east-2.amazonaws.com/renderpop-assets/media/showcase/create_card_4.webp", alt: "Create Card 4", rotate: "rotate-[13deg] translate-y-3 hidden sm:block" },
+  ];
+
+  return (
+    <div className="mt-4 mb-auto flex flex-col items-center justify-center text-center select-none pt-6 pb-2 sm:pt-10">
+      {/* Curved 3D Cards Fan Layout */}
+      <div className="relative mb-10 flex items-center justify-center gap-2 pt-2 sm:gap-4 sm:mb-14 md:gap-5">
+        {cards.map((card, i) => (
+          <div
+            key={i}
+            className={`group relative h-[160px] w-[120px] overflow-hidden rounded-[22px] border border-white/20 bg-black/60 shadow-[0_20px_50px_rgba(0,0,0,0.8)] transition-all duration-500 ease-out hover:z-20 hover:scale-105 hover:rotate-0 hover:border-emerald-400/50 hover:shadow-[0_0_30px_rgba(52,211,153,0.3)] sm:h-[210px] sm:w-[155px] md:h-[240px] md:w-[180px] ${card.rotate}`}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={card.src}
+              alt={card.alt}
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          </div>
+        ))}
+      </div>
+
+      {/* Hero Title */}
+      <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl">
+        Create or Edit Image with AI
+      </h1>
+    </div>
+  );
+}
+
+export function CreateWorkspace({ sessionId }: { sessionId?: string }) {
   const router = useRouter();
   const [session, setSession] = useState<SessionData | null>(null);
   const [sessions, setSessions] = useState<CreationSession[]>([]);
@@ -154,7 +193,13 @@ export function CreateWorkspace({ sessionId }: { sessionId: string }) {
   const pollsRef = useRef(new Map<string, number>());
   const taskNodesRef = useRef(new Map<string, HTMLElement>());
 
+  // Fetch session data if sessionId is provided
   useEffect(() => {
+    if (!sessionId) {
+      setReady(true);
+      return;
+    }
+
     let active = true;
     void Promise.all([
       apiFetch<CreationSession>(`/creation-sessions/${sessionId}`),
@@ -176,6 +221,7 @@ export function CreateWorkspace({ sessionId }: { sessionId: string }) {
   }, [sessionId]);
 
   const syncTask = useCallback((task: GenerationTaskResponse) => {
+    if (!sessionId) return;
     setSession((current) => current ? {
       ...current,
       tasks: current.tasks.map((item) => item.jobId === task.job_id
@@ -189,6 +235,7 @@ export function CreateWorkspace({ sessionId }: { sessionId: string }) {
   }, [sessionId]);
 
   useEffect(() => {
+    if (!sessionId) return;
     const pending = session?.tasks.filter((task) => !TERMINAL.has(task.status)) ?? [];
     if (!pending.length) return;
 
@@ -204,7 +251,7 @@ export function CreateWorkspace({ sessionId }: { sessionId: string }) {
           }
           if (!disposed) syncTask(task);
         } catch {
-          // Keep the message visible; a later interval can recover from temporary network failures.
+          // Keep the message visible
         }
       }));
     };
@@ -214,17 +261,24 @@ export function CreateWorkspace({ sessionId }: { sessionId: string }) {
       disposed = true;
       window.clearInterval(timer);
     };
-  }, [session?.tasks, syncTask]);
+  }, [sessionId, session?.tasks, syncTask]);
 
   const onTaskCreated = useCallback((submission: StudioTaskSubmission) => {
-    const nextTask = toSessionTask(submission.task, submission.sourcePreviewUrl ?? submission.task.input_url);
-    setSession((current) => current ? { ...current, tasks: [...current.tasks, nextTask] } : current);
-    setSessions((current) => current.map((item) => item.id === sessionId ? {
-      ...item,
-      tasks: [...item.tasks, submission.task],
-    } : item));
-    window.setTimeout(() => taskNodesRef.current.get(submission.task.job_id)?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
-  }, [sessionId]);
+    if (sessionId) {
+      const nextTask = toSessionTask(submission.task, submission.sourcePreviewUrl ?? submission.task.input_url);
+      setSession((current) => current ? { ...current, tasks: [...current.tasks, nextTask] } : current);
+      setSessions((current) => current.map((item) => item.id === sessionId ? {
+        ...item,
+        tasks: [...item.tasks, submission.task],
+      } : item));
+      window.setTimeout(() => taskNodesRef.current.get(submission.task.job_id)?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+    } else {
+      // If generated from bare /create page, navigate into the created task's session
+      if (submission.task.session_id) {
+        router.push(`/create/${submission.task.session_id}`);
+      }
+    }
+  }, [sessionId, router]);
 
   const createNewSession = useCallback(async () => {
     setCreatingSession(true);
@@ -238,20 +292,14 @@ export function CreateWorkspace({ sessionId }: { sessionId: string }) {
 
   if (!ready) return <div className="min-h-[calc(100vh-4rem)] bg-black" />;
 
-  if (!session) {
-    return (
-      <section className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-black px-6 text-center">
-        <div>
-          <h1 className="text-xl font-semibold text-white">This creation session is unavailable</h1>
-          <p className="mt-3 text-sm text-zinc-500">Start a new task from the homepage to create a session.</p>
-          <Link href="/" className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-zinc-300 hover:text-white"><IconArrowLeft className="size-4" /> Back to home</Link>
-        </div>
-      </section>
-    );
-  }
+  const isBareCreatePage = !sessionId;
 
   return (
-    <section className="session-page min-h-[calc(100vh-4rem)] bg-black text-white">
+    <section className={`session-page relative bg-black text-white ${isBareCreatePage ? "h-[calc(100vh-4rem)] overflow-hidden" : "min-h-[calc(100vh-4rem)]"}`}>
+      {/* Background Ambient Glow */}
+      <div className="pointer-events-none absolute left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[800px] rounded-full bg-emerald-600/10 blur-[140px]" />
+
+      {/* Left Navigation Rail (Only show on session or desktop) */}
       <aside className="session-rail fixed bottom-0 left-0 top-16 z-30 hidden w-[76px] border-r border-white/[0.055] bg-[#09090b] py-3 lg:flex lg:flex-col lg:items-center">
         <Link href="/" className="mb-5 inline-flex items-center gap-1 text-xs text-zinc-600 transition hover:text-zinc-200"><IconArrowLeft className="size-3.5" /> Back</Link>
         <button type="button" onClick={() => void createNewSession()} disabled={creatingSession} aria-label="New creation session" className="session-rail-button disabled:cursor-wait disabled:opacity-60"><IconPlus className="size-6" stroke={1.65} /></button>
@@ -279,29 +327,43 @@ export function CreateWorkspace({ sessionId }: { sessionId: string }) {
         </div>
       </aside>
 
-      <main className="min-h-[calc(100vh-4rem)] px-4 pb-[260px] pt-7 lg:ml-[76px] lg:px-10 xl:px-14">
-        <div className="mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-[1680px] flex-col">
-          <div className="mb-5 flex items-center gap-2 text-xs text-zinc-600 lg:hidden"><Link href="/" className="inline-flex items-center gap-1 hover:text-zinc-300"><IconArrowLeft className="size-3.5" /> Back</Link></div>
-
-          <div className="flex-1">
-            {session.tasks.map((task) => (
-              <div
-                key={task.jobId}
-                ref={(node) => {
-                  if (node) taskNodesRef.current.set(task.jobId, node);
-                  else taskNodesRef.current.delete(task.jobId);
-                }}
-                className="scroll-mt-24"
-              >
-                <ThreadTask task={task} />
-              </div>
-            ))}
+      {/* Main Content View */}
+      <main className={`px-4 lg:ml-[76px] lg:px-10 xl:px-14 ${isBareCreatePage ? "flex h-full flex-col pt-3 pb-[210px]" : "min-h-[calc(100vh-4rem)] pt-7 pb-[260px]"}`}>
+        <div className={`mx-auto flex w-full max-w-[1680px] flex-col ${isBareCreatePage ? "h-full flex-1" : "min-h-[calc(100vh-6rem)]"}`}>
+          <div className="mb-5 flex items-center gap-2 text-xs text-zinc-600 lg:hidden">
+            <Link href="/" className="inline-flex items-center gap-1 hover:text-zinc-300"><IconArrowLeft className="size-3.5" /> Back</Link>
           </div>
 
+          {isBareCreatePage ? (
+            <BareCreateHero />
+          ) : session ? (
+            <div className="flex-1">
+              {session.tasks.map((task) => (
+                <div
+                  key={task.jobId}
+                  ref={(node) => {
+                    if (node) taskNodesRef.current.set(task.jobId, node);
+                    else taskNodesRef.current.delete(task.jobId);
+                  }}
+                  className="scroll-mt-24"
+                >
+                  <ThreadTask task={task} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <section className="flex min-h-[calc(100vh-12rem)] items-center justify-center text-center">
+              <div>
+                <h1 className="text-xl font-semibold text-white">This creation session is unavailable</h1>
+                <p className="mt-3 text-sm text-zinc-500">Start a new task from below to create a session.</p>
+              </div>
+            </section>
+          )}
         </div>
       </main>
 
-      <div className="fixed bottom-3 left-4 right-4 z-40 rounded-[18px] border border-white/[0.095] bg-[#14141a] shadow-[0_18px_60px_rgba(0,0,0,0.48)] lg:left-[116px] lg:right-10 xl:left-[132px] xl:right-14">
+      {/* Floating Creen-style Bottom Studio Studio Control Bar */}
+      <div className="fixed bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 z-40 rounded-[20px] sm:rounded-[22px] border border-white/[0.1] bg-[#111116]/90 p-1.5 shadow-[0_20px_70px_rgba(0,0,0,0.6)] backdrop-blur-2xl lg:left-[116px] lg:right-10 xl:left-[132px] xl:right-14">
         <GenerateStudio variant="session" sessionId={sessionId} onTaskCreated={onTaskCreated} />
       </div>
     </section>

@@ -6,6 +6,7 @@ import {
   IconAlertTriangle,
   IconArrowUp,
   IconBolt,
+  IconChevronDown,
   IconCrown,
   IconDownload,
   IconLoader2,
@@ -697,13 +698,13 @@ export function GenerateStudio({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] pt-4">
+        <div className="flex items-center justify-between gap-2 border-t border-white/[0.08] pt-3 sm:pt-4">
           {isVideo ? (
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar min-w-0 flex-1">
               <button
                 type="button"
                 onClick={() => setOptionsOpen(true)}
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/[0.1] bg-[#17171a] px-3 text-xs font-medium text-zinc-300 transition hover:border-white/[0.2] hover:text-white active:scale-[0.98]"
+                className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg border border-white/[0.1] bg-[#17171a] px-3 text-xs font-medium text-zinc-300 transition hover:border-white/[0.2] hover:text-white active:scale-[0.98]"
               >
                 <IconAdjustmentsHorizontal className="size-3.5" stroke={1.9} />
                 {t("hero.videoOptions")}
@@ -713,12 +714,12 @@ export function GenerateStudio({
               </span>
             </div>
           ) : (
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex rounded-lg border border-white/[0.1] bg-[#17171a] p-1">
+            <div className="flex items-center gap-2 overflow-x-auto sm:overflow-visible no-scrollbar min-w-0 flex-1 py-0.5">
+              <div className="inline-flex shrink-0 rounded-lg border border-white/[0.1] bg-[#17171a] p-1">
                 <button
                   type="button"
                   onClick={() => selectImageMode("FAST")}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition ${mode === "FAST" ? "bg-white/[0.1] text-white" : "text-zinc-500 hover:text-white"}`}
+                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs font-medium transition ${mode === "FAST" ? "bg-white/[0.1] text-white" : "text-zinc-500 hover:text-white"}`}
                 >
                   <IconBolt className="size-3.5" stroke={1.9} />
                   {t("hero.modeFast")}
@@ -726,7 +727,7 @@ export function GenerateStudio({
                 <button
                   type="button"
                   onClick={() => selectImageMode("PRO")}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition ${mode === "PRO" ? "bg-[#8e36dc] text-white" : "text-zinc-500 hover:text-white"}`}
+                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs font-medium transition ${mode === "PRO" ? "bg-[#8e36dc] text-white" : "text-zinc-500 hover:text-white"}`}
                 >
                   <IconCrown className="size-3.5" stroke={1.75} />
                   {t("hero.modePro")}
@@ -737,7 +738,7 @@ export function GenerateStudio({
                   <button
                     type="button"
                     onClick={() => setImageOptionsOpen(true)}
-                    className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/[0.1] bg-[#17171a] px-3 text-xs font-medium text-zinc-300 transition hover:border-white/[0.2] hover:text-white active:scale-[0.98]"
+                    className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg border border-white/[0.1] bg-[#17171a] px-3 text-xs font-medium text-zinc-300 transition hover:border-white/[0.2] hover:text-white active:scale-[0.98]"
                   >
                     <IconAdjustmentsHorizontal className="size-3.5" stroke={1.9} />
                     {t("hero.imageOptions")}
@@ -747,45 +748,98 @@ export function GenerateStudio({
                   </span>
                 </>
               ) : (
-                <div className="flex items-center gap-1 rounded-lg border border-white/[0.1] bg-[#17171a] p-1">
-                  {ASPECT_RATIOS.map((ratio) => (
-                    <button
-                      key={ratio}
-                      type="button"
-                      disabled={busy}
-                      onClick={() => setAspect(ratio)}
-                      className={`rounded-md px-2.5 py-1.5 text-xs font-medium transition ${ratio === aspect ? "bg-white/[0.1] text-white" : "text-zinc-500 hover:text-white"}`}
-                    >
-                      {ratio}
-                    </button>
-                  ))}
+                <div className="relative flex shrink-0 items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setImageOptionsOpen((v) => !v)}
+                    className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/[0.1] bg-[#17171a] px-3 text-xs font-medium text-zinc-300 transition hover:border-white/[0.2] hover:text-white active:scale-[0.98]"
+                  >
+                    <span>{aspect}</span>
+                    <IconChevronDown className="size-3.5 text-zinc-400" stroke={2} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageOptionsOpen((v) => !v)}
+                    className="inline-flex size-9 items-center justify-center rounded-lg border border-white/[0.1] bg-[#17171a] text-zinc-300 transition hover:border-white/[0.2] hover:text-white active:scale-[0.98]"
+                    aria-label="Settings"
+                  >
+                    <IconAdjustmentsHorizontal className="size-4" stroke={1.9} />
+                  </button>
+
+                  {imageOptionsOpen ? (
+                    <>
+                      <div className="fixed inset-0 z-[60] bg-black/40 sm:bg-transparent" onClick={() => setImageOptionsOpen(false)} />
+                      
+                      <section
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="image-settings-title"
+                        className="fixed inset-x-3 bottom-3 z-[70] w-auto rounded-2xl border border-white/[0.14] bg-[#16161d]/95 p-4 shadow-[0_25px_70px_rgba(0,0,0,0.85)] backdrop-blur-2xl sm:absolute sm:bottom-full sm:left-0 sm:right-auto sm:top-auto sm:mb-2.5 sm:w-[360px] animate-in fade-in zoom-in-95 duration-150"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.08]">
+                          <h2 id="image-settings-title" className="text-xs font-semibold uppercase tracking-wider text-zinc-300">{t("hero.imageOptionsTitle")}</h2>
+                          <button type="button" onClick={() => setImageOptionsOpen(false)} className="inline-flex size-6 items-center justify-center rounded-md text-zinc-400 hover:bg-white/[0.1] hover:text-white transition-colors" aria-label={t("hero.imageCloseOptions")}>
+                            <IconX className="size-3.5" stroke={1.75} />
+                          </button>
+                        </div>
+
+                        <div className="mt-3.5 space-y-3.5">
+                          {mode === "PRO" ? (
+                            <fieldset>
+                              <legend className="mb-1.5 text-xs font-medium text-zinc-400">{t("hero.imageQuality")}</legend>
+                              <div className="grid grid-cols-3 gap-1.5">
+                                {imageI2iResolutions.map((resolution) => (
+                                  <button key={resolution} type="button" onClick={() => setProImageToImageResolution(resolution)} className={`h-8 rounded-lg border text-xs font-medium transition ${proImageToImageResolution === resolution ? "border-[#b737b8] bg-[#b737b8]/20 text-white font-semibold" : "border-white/[0.1] bg-[#121215] text-zinc-400 hover:text-white"}`}>{resolution}</button>
+                                ))}
+                              </div>
+                            </fieldset>
+                          ) : null}
+
+                          <fieldset>
+                            <legend className="mb-1.5 text-xs font-medium text-zinc-400">{t("hero.imageAspect")}</legend>
+                            <div className="grid grid-cols-5 gap-1.5">
+                              {(isImageToImage ? imageI2iAspects : (ASPECT_RATIOS as readonly string[])).map((ratio) => (
+                                <button
+                                  key={ratio}
+                                  type="button"
+                                  onClick={() => {
+                                    if (isImageToImage) setImageToImageAspect(ratio);
+                                    else setAspect(ratio as AspectRatio);
+                                  }}
+                                  className={`h-8 rounded-lg border text-xs font-medium transition ${(isImageToImage ? imageToImageAspect : aspect) === ratio ? "border-[#b737b8] bg-[#b737b8]/20 text-white font-semibold shadow-[0_0_12px_rgba(183,55,184,0.3)]" : "border-white/[0.1] bg-[#121215] text-zinc-400 hover:text-white"}`}
+                                >
+                                  {ratio === "auto" ? t("hero.imageAspectAuto") : ratio === "empty" ? t("hero.imageAspectOriginal") : ratio}
+                                </button>
+                              ))}
+                            </div>
+                          </fieldset>
+                        </div>
+
+                        <button type="button" onClick={() => setImageOptionsOpen(false)} className="brand-cta mt-4 inline-flex h-8 w-full items-center justify-center rounded-lg text-xs font-semibold text-white active:scale-[0.98]">
+                          {t("hero.imageCloseOptions")}
+                        </button>
+                      </section>
+                    </>
+                  ) : null}
                 </div>
               )}
             </div>
           )}
 
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             {!isVideo && (remaining != null && dailyLimit != null ? (
-              <span className="hidden text-xs text-zinc-500 sm:inline-block">
+              <span className="hidden text-xs text-zinc-500 md:inline-block">
                 <strong className="font-medium text-zinc-300">{remaining}</strong> / {dailyLimit} {t("common.freeDailyFast")}
               </span>
-            ) : <span className="hidden text-xs text-zinc-500 sm:inline-block">{t("common.freeDailyFast")}</span>)}
+            ) : <span className="hidden text-xs text-zinc-500 md:inline-block">{t("common.freeDailyFast")}</span>)}
             <button
               type="submit"
               disabled={isVideo ? !canGenerateVideo : busy || !prompt.trim()}
-              className="brand-cta inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-semibold text-white transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+              className="brand-cta inline-flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-full text-white shadow-lg transition hover:opacity-90 active:scale-95 disabled:opacity-40"
+              title={t("hero.generate")}
             >
-              {busy ? (
-                <>
-                  <IconLoader2 className="size-4 animate-spin" stroke={2} />
-                  <span>{statusLabel ?? "Generating"}</span>
-                </>
-              ) : (
-                <>
-                  <span>{isVideo ? videoCtaLabel : t("hero.btnGenerate")}</span>
-                  <IconArrowUp className="size-4" stroke={2} />
-                </>
-              )}
+              {busy ? <IconLoader2 className="size-4 animate-spin" stroke={2} /> : <IconArrowUp className="size-4 sm:size-5" stroke={2.2} />}
             </button>
           </div>
         </div>
@@ -887,51 +941,6 @@ export function GenerateStudio({
 
             <button type="button" onClick={() => setOptionsOpen(false)} className="brand-cta mt-6 inline-flex h-10 w-full items-center justify-center rounded-lg px-4 text-sm font-semibold text-white active:scale-[0.98]">
               {t("hero.videoCloseOptions")}
-            </button>
-          </section>
-        </div>
-      ) : null}
-
-      {imageOptionsOpen ? (
-        <div className="fixed inset-0 z-[60] flex items-end bg-black/65 p-3 sm:items-center sm:justify-center" role="presentation" onMouseDown={() => setImageOptionsOpen(false)}>
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="image-settings-title"
-            className="w-full max-w-lg rounded-2xl border border-white/[0.12] bg-[#18181b] p-5 shadow-2xl"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <div className="flex items-center justify-between">
-              <h2 id="image-settings-title" className="text-base font-semibold text-white">{t("hero.imageOptionsTitle")}</h2>
-              <button type="button" onClick={() => setImageOptionsOpen(false)} className="inline-flex size-8 items-center justify-center rounded-lg text-zinc-500 hover:bg-white/[0.07] hover:text-white" aria-label={t("hero.imageCloseOptions")}>
-                <IconX className="size-4" stroke={1.75} />
-              </button>
-            </div>
-
-            <div className="mt-6 space-y-5">
-              {mode === "PRO" ? (
-                <fieldset>
-                  <legend className="mb-2 text-sm font-medium text-zinc-200">{t("hero.imageQuality")}</legend>
-                  <div className="grid grid-cols-3 gap-2">
-                    {imageI2iResolutions.map((resolution) => (
-                      <button key={resolution} type="button" onClick={() => setProImageToImageResolution(resolution)} className={`h-10 rounded-lg border text-sm font-medium transition ${proImageToImageResolution === resolution ? "border-[#b737b8] bg-[#b737b8]/15 text-white" : "border-white/[0.1] bg-[#121215] text-zinc-400 hover:text-white"}`}>{resolution}</button>
-                    ))}
-                  </div>
-                </fieldset>
-              ) : null}
-
-              <fieldset>
-                <legend className="mb-2 text-sm font-medium text-zinc-200">{t("hero.imageAspect")}</legend>
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                  {imageI2iAspects.map((ratio) => (
-                    <button key={ratio} type="button" onClick={() => setImageToImageAspect(ratio)} className={`h-10 rounded-lg border text-xs font-medium transition ${imageToImageAspect === ratio ? "border-[#b737b8] bg-[#b737b8]/15 text-white" : "border-white/[0.1] bg-[#121215] text-zinc-400 hover:text-white"}`}>{ratio === "auto" ? t("hero.imageAspectAuto") : ratio === "empty" ? t("hero.imageAspectOriginal") : ratio}</button>
-                  ))}
-                </div>
-              </fieldset>
-            </div>
-
-            <button type="button" onClick={() => setImageOptionsOpen(false)} className="brand-cta mt-6 inline-flex h-10 w-full items-center justify-center rounded-lg px-4 text-sm font-semibold text-white active:scale-[0.98]">
-              {t("hero.imageCloseOptions")}
             </button>
           </section>
         </div>
