@@ -1,6 +1,7 @@
 "use client";
 
 import { startTransition, useCallback, useEffect, useId, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   IconAdjustmentsHorizontal,
   IconAlertTriangle,
@@ -142,7 +143,8 @@ export function GenerateStudio({
   variant = "default",
 }: StudioProps) {
   const { t } = useI18n();
-  const { user, requireAuth } = useAuth();
+  const { user, isLoading: authLoading, requireAuth } = useAuth();
+
   const [initialDraft] = useState<StudioDraft | null>(() => readStudioDraft());
   const promptId = useId();
   const videoUploadId = useId();
@@ -188,6 +190,7 @@ export function GenerateStudio({
   }, []);
 
   useEffect(() => {
+    if (authLoading) return;
     let active = true;
     void apiFetch<EntitlementsResponse>("/me/entitlements")
       .then((data) => {
@@ -197,7 +200,8 @@ export function GenerateStudio({
     return () => {
       active = false;
     };
-  }, []);
+  }, [user, authLoading]);
+
 
   useEffect(() => {
     if (seedPrompt) {
@@ -213,6 +217,22 @@ export function GenerateStudio({
       textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [seedPrompt, seedAspect, onSeedConsumed]);
+
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const urlPrompt = searchParams?.get("prompt");
+    const urlAspect = searchParams?.get("aspect");
+    if (urlPrompt) {
+      startTransition(() => {
+        setWorkspace("IMAGE");
+        setPrompt(urlPrompt);
+        if (urlAspect && ASPECT_RATIOS.includes(urlAspect as AspectRatio)) {
+          setAspect(urlAspect as AspectRatio);
+        }
+      });
+      textareaRef.current?.focus();
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const previewUrl = videoAsset?.previewUrl;

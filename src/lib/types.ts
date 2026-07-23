@@ -131,6 +131,7 @@ export type AssetMediaType = "image" | "video";
 /** A completed generation that is available in the signed-in user's asset library. */
 export type GeneratedAsset = {
   job_id: string;
+  session_id?: string | null;
   task_type: TaskType;
   model_code: string | null;
   prompt: string;
@@ -139,6 +140,7 @@ export type GeneratedAsset = {
   created_at: string;
   completed_at: string | null;
 };
+
 
 export type GeneratedAssetListResponse = {
   items: GeneratedAsset[];

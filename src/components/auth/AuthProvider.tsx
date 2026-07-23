@@ -28,6 +28,8 @@ type MeResponse = {
 type AuthContextValue = {
   user: AuthUser | null;
   isLoading: boolean;
+  isInitialized: boolean;
+  isAuthenticated: boolean;
   refresh: () => Promise<void>;
   signOut: () => Promise<void>;
   requireAuth: () => boolean;
@@ -92,9 +94,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const value = useMemo(
-    () => ({ user, isLoading, refresh, signOut, requireAuth }),
+    () => ({
+      user,
+      isLoading,
+      isInitialized: !isLoading,
+      isAuthenticated: !!user,
+      refresh,
+      signOut,
+      requireAuth,
+    }),
     [user, isLoading, refresh, signOut, requireAuth],
   );
+
 
   return (
     <AuthContext.Provider value={value}>

@@ -6,5 +6,5 @@ export default async function CreateSessionPage({
   params: Promise<{ sessionId: string }>;
 }) {
   const { sessionId } = await params;
-  return <CreateWorkspace key={sessionId} sessionId={sessionId} />;
+  return <CreateWorkspace sessionId={sessionId} />;
 }
