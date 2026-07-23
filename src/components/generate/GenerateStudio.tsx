@@ -30,6 +30,7 @@ import {
   type GenerationTaskResponse,
   type UploadIntentResponse,
 } from "@/lib/types";
+import type { StudioTaskSubmission } from "@/lib/studio-sessions";
 
 const TERMINAL = new Set([
   "SUCCEEDED",
@@ -72,6 +73,13 @@ type StudioProps = {
   seedPrompt?: string | null;
   seedAspect?: string | null;
   onSeedConsumed?: () => void;
+  /** When supplied, hand a new job to the session workspace instead of polling in place. */
+  onTaskCreated?: (submission: StudioTaskSubmission) => void;
+  /** Creates a durable session before the task is submitted. */
+  createSessionForTask?: () => Promise<string>;
+  /** Existing durable session that owns every task created in this studio. */
+  sessionId?: string;
+  variant?: "default" | "session";
 };
 
 function sleep(ms: number) {
@@ -127,6 +135,10 @@ export function GenerateStudio({
   seedPrompt,
   seedAspect,
   onSeedConsumed,
+  onTaskCreated,
+  createSessionForTask,
+  sessionId,
+  variant = "default",
 }: StudioProps) {
   const { t } = useI18n();
   const { user, requireAuth } = useAuth();
@@ -160,6 +172,7 @@ export function GenerateStudio({
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [resultKind, setResultKind] = useState<"image" | "video" | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const retainedPreviewUrlsRef = useRef(new Set<string>());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const videoFileInputRef = useRef<HTMLInputElement>(null);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
@@ -201,14 +214,22 @@ export function GenerateStudio({
   }, [seedPrompt, seedAspect, onSeedConsumed]);
 
   useEffect(() => {
+    const previewUrl = videoAsset?.previewUrl;
+    const retainedPreviewUrls = retainedPreviewUrlsRef.current;
     return () => {
-      if (videoAsset?.previewUrl) URL.revokeObjectURL(videoAsset.previewUrl);
+      if (previewUrl && !retainedPreviewUrls.has(previewUrl)) {
+        URL.revokeObjectURL(previewUrl);
+      }
     };
   }, [videoAsset?.previewUrl]);
 
   useEffect(() => {
+    const previewUrl = imageAsset?.previewUrl;
+    const retainedPreviewUrls = retainedPreviewUrlsRef.current;
     return () => {
-      if (imageAsset?.previewUrl) URL.revokeObjectURL(imageAsset.previewUrl);
+      if (previewUrl && !retainedPreviewUrls.has(previewUrl)) {
+        URL.revokeObjectURL(previewUrl);
+      }
     };
   }, [imageAsset?.previewUrl]);
 
@@ -283,13 +304,17 @@ export function GenerateStudio({
   }
 
   function clearVideoAsset() {
-    if (videoAsset?.previewUrl) URL.revokeObjectURL(videoAsset.previewUrl);
+    if (videoAsset?.previewUrl && !retainedPreviewUrlsRef.current.has(videoAsset.previewUrl)) {
+      URL.revokeObjectURL(videoAsset.previewUrl);
+    }
     setVideoAsset(null);
     if (videoFileInputRef.current) videoFileInputRef.current.value = "";
   }
 
   function clearImageAsset() {
-    if (imageAsset?.previewUrl) URL.revokeObjectURL(imageAsset.previewUrl);
+    if (imageAsset?.previewUrl && !retainedPreviewUrlsRef.current.has(imageAsset.previewUrl)) {
+      URL.revokeObjectURL(imageAsset.previewUrl);
+    }
     setImageAsset(null);
     setImageToImageAspect("auto");
     if (imageFileInputRef.current) imageFileInputRef.current.value = "";
@@ -378,12 +403,15 @@ export function GenerateStudio({
           byte_size: file.size,
         },
       });
-      const putResponse = await fetch(intent.upload_url, {
-        method: "PUT",
-        headers: intent.headers,
-        body: file,
-      });
-      if (!putResponse.ok) throw new Error("Upload failed.");
+      const isStubUpload = intent.upload_url.includes("example.com") || intent.upload_url.includes("stub-upload");
+      if (!isStubUpload) {
+        const putResponse = await fetch(intent.upload_url, {
+          method: "PUT",
+          headers: intent.headers,
+          body: file,
+        });
+        if (!putResponse.ok) throw new Error("Upload failed.");
+      }
       const completed = await apiFetch<AssetResponse>(`/assets/${intent.asset_id}/complete`, {
         method: "POST",
         body: {},
@@ -432,6 +460,7 @@ export function GenerateStudio({
     setStatusLabel(isVideo ? t("hero.videoGenerating") : "starting");
 
     try {
+      const taskSessionId = sessionId ?? (createSessionForTask ? await createSessionForTask() : undefined);
       const created = await apiFetch<GenerationTaskResponse>("/generations", {
         method: "POST",
         body: isVideo
@@ -443,6 +472,7 @@ export function GenerateStudio({
               resolution: videoResolution,
               generate_audio: generateAudio,
               input_asset_id: videoAsset?.assetId,
+              session_id: taskSessionId,
               client_request_id: crypto.randomUUID(),
             }
           : {
@@ -453,6 +483,7 @@ export function GenerateStudio({
               aspect_ratio: isImageToImage ? imageToImageAspect : aspect,
               resolution: isImageToImage && mode === "PRO" ? proImageToImageResolution : undefined,
               input_asset_id: isImageToImage ? imageAsset?.assetId : undefined,
+              session_id: taskSessionId,
               client_request_id: crypto.randomUUID(),
             },
         headers: { "Idempotency-Key": crypto.randomUUID() },
@@ -460,6 +491,15 @@ export function GenerateStudio({
       });
 
       setStatusLabel(created.status);
+      if (onTaskCreated) {
+        const sourcePreviewUrl = isVideo ? videoAsset?.previewUrl ?? null : imageAsset?.previewUrl ?? null;
+        if (sourcePreviewUrl) retainedPreviewUrlsRef.current.add(sourcePreviewUrl);
+        onTaskCreated({ task: created, prompt: text, sourcePreviewUrl });
+        setPrompt("");
+        window.sessionStorage.removeItem(STUDIO_DRAFT_KEY);
+        await loadEntitlements();
+        return;
+      }
       const done = await pollUntilDone(created.job_id, controller.signal);
       if (done.status === "SUCCEEDED") {
         setResultUrl(done.result_urls?.[0] ?? null);
@@ -527,7 +567,7 @@ export function GenerateStudio({
       : t("hero.btnGenerateVideo");
 
   return (
-    <div className="w-full">
+    <div className={`w-full ${variant === "session" ? "session-composer" : ""}`}>
       <div className="flex items-center gap-1 border-b border-white/[0.09] px-1">
         <button
           type="button"
@@ -752,8 +792,22 @@ export function GenerateStudio({
       </form>
 
       {error ? (
-        <div className="mx-4 mb-4 flex items-start justify-between gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200 sm:mx-6 sm:mb-6">
-          <span className="flex items-start gap-2"><IconAlertTriangle className="mt-0.5 size-4 shrink-0" stroke={1.8} />{error}</span>
+        <div className="relative mx-4 mb-4 flex items-center justify-between gap-3.5 overflow-hidden rounded-xl border border-rose-500/25 bg-zinc-950/90 px-4 py-3 text-xs text-zinc-200 backdrop-blur-xl shadow-xl shadow-rose-950/20 sm:mx-6 sm:mb-6 animate-in fade-in slide-in-from-bottom-2 duration-200">
+          <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-rose-500/40 to-transparent" />
+          <div className="flex items-center gap-3">
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-400">
+              <IconAlertTriangle className="size-4" stroke={1.8} />
+            </div>
+            <span className="font-medium tracking-wide text-zinc-200">{error}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="flex size-6 shrink-0 items-center justify-center rounded-md text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+            title="Dismiss"
+          >
+            <IconX className="size-3.5" stroke={2} />
+          </button>
         </div>
       ) : null}
 

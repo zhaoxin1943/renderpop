@@ -1,17 +1,22 @@
 "use client";
 import { useI18n } from "@/i18n/I18nContext";
 import { GenerateStudio } from "@/components/generate/GenerateStudio";
+import type { StudioTaskSubmission } from "@/lib/studio-sessions";
 
 interface HeroSectionProps {
   seedPrompt?: string;
   seedAspect?: string;
   onSeedConsumed?: () => void;
+  onTaskCreated?: (submission: StudioTaskSubmission) => void;
+  createSessionForTask?: () => Promise<string>;
 }
 
 export function HeroSection({
   seedPrompt,
   seedAspect,
   onSeedConsumed,
+  onTaskCreated,
+  createSessionForTask,
 }: HeroSectionProps) {
   const { t } = useI18n();
 
@@ -26,6 +31,8 @@ export function HeroSection({
             seedPrompt={seedPrompt}
             seedAspect={seedAspect}
             onSeedConsumed={onSeedConsumed}
+            onTaskCreated={onTaskCreated}
+            createSessionForTask={createSessionForTask}
           />
         </div>
       </div>

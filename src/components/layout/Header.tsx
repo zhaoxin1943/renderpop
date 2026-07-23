@@ -2,29 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { IconLogout2, IconUserCircle } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useI18n } from "@/i18n/I18nContext";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
+import { UserDropdown } from "@/components/layout/UserDropdown";
 
 export function Header() {
   const { t } = useI18n();
-  const router = useRouter();
-  const { user, isLoading, signOut } = useAuth();
-  const [isSigningOut, setIsSigningOut] = useState(false);
-
-  async function handleSignOut() {
-    setIsSigningOut(true);
-    try {
-      await signOut();
-      router.replace("/");
-      router.refresh();
-    } finally {
-      setIsSigningOut(false);
-    }
-  }
+  const { user, isLoading } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.07] bg-[#050505]/92 backdrop-blur-xl">
@@ -43,16 +28,10 @@ export function Header() {
 
         <nav className="flex items-center gap-0.5 sm:gap-2" aria-label="Primary">
           <Link
-            href="/#create"
+            href="/create"
             className="hidden px-3 py-2 text-sm text-zinc-400 transition hover:text-white sm:inline-flex"
           >
             {t("nav.create")}
-          </Link>
-          <Link
-            href="/#examples"
-            className="hidden px-3 py-2 text-sm text-zinc-400 transition hover:text-white sm:inline-flex"
-          >
-            {t("nav.explore")}
           </Link>
           <Link
             href="/pricing"
@@ -64,29 +43,8 @@ export function Header() {
             <LanguageSwitcher />
           </div>
           {user ? (
-            <div className="ml-2 flex items-center gap-1.5">
-              <Link
-                href="/account"
-                aria-label={t("auth.account")}
-                className="flex size-9 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/[0.06] text-zinc-200 transition hover:border-white/30 hover:text-white"
-              >
-                {user.avatar_url ? (
-                  // Google avatars are external and should not be optimized by Next here.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={user.avatar_url} alt="" className="size-full object-cover" referrerPolicy="no-referrer" />
-                ) : (
-                  <IconUserCircle size={21} />
-                )}
-              </Link>
-              <button
-                type="button"
-                onClick={handleSignOut}
-                disabled={isSigningOut}
-                aria-label={t("auth.signOut")}
-                className="hidden size-9 items-center justify-center rounded-lg text-zinc-400 transition hover:bg-white/[0.06] hover:text-white disabled:cursor-wait sm:flex"
-              >
-                <IconLogout2 size={17} className={isSigningOut ? "animate-pulse" : ""} />
-              </button>
+            <div className="ml-2 flex items-center">
+              <UserDropdown />
             </div>
           ) : (
             <Link

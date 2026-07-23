@@ -6,7 +6,8 @@ export type TaskType =
   | "FAST_IMAGE_TO_IMAGE"
   | "PRO_IMAGE_TO_IMAGE"
   | "TEXT_VIDEO"
-  | "IMAGE_VIDEO";
+  | "IMAGE_VIDEO"
+  | "DANCE_VIDEO";
 
 /** Matches renderpop_server TaskStatus StrEnum values. */
 export type TaskStatus =
@@ -47,8 +48,10 @@ export type EntitlementsResponse = {
 
 export type GenerationTaskResponse = {
   job_id: string;
+  session_id: string | null;
   task_type: TaskType;
   status: TaskStatus;
+  prompt: string;
   aspect_ratio: string;
   credits_reserved: number;
   length: number | null;
@@ -56,9 +59,25 @@ export type GenerationTaskResponse = {
   generate_audio: boolean | null;
   result_transfer_status: string | null;
   result_urls: string[] | null;
+  input_url: string | null;
   failure_code: string | null;
   created_at: string | null;
   completed_at: string | null;
+};
+
+export type CreationSession = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  tasks: GenerationTaskResponse[];
+};
+
+export type LatestCreationSessionResponse = {
+  session: CreationSession | null;
+};
+
+export type CreationSessionListResponse = {
+  sessions: CreationSession[];
 };
 
 export type GenerationQuoteResponse = {
@@ -105,6 +124,25 @@ export type AssetResponse = {
   status: string;
   mime_type: string | null;
   byte_size: number | null;
+};
+
+export type AssetMediaType = "image" | "video";
+
+/** A completed generation that is available in the signed-in user's asset library. */
+export type GeneratedAsset = {
+  job_id: string;
+  task_type: TaskType;
+  model_code: string | null;
+  prompt: string;
+  aspect_ratio: string;
+  result_url: string;
+  created_at: string;
+  completed_at: string | null;
+};
+
+export type GeneratedAssetListResponse = {
+  items: GeneratedAsset[];
+  next_offset: number | null;
 };
 
 export type ShowcaseItem = {

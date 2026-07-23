@@ -2,11 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useI18n } from "@/i18n/I18nContext";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
 export function Footer() {
   const { t } = useI18n();
+  const pathname = usePathname();
+
+  // A creation session is a focused workspace, not a marketing page.
+  if (pathname.startsWith("/create") || pathname.startsWith("/assets")) return null;
 
   return (
     <footer className="mt-auto border-t border-white/[0.07] bg-[#050505] text-xs text-zinc-400">
