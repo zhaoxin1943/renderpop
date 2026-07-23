@@ -10,6 +10,7 @@ import {
   IconCopy,
   IconFolder,
   IconLoader2,
+  IconMenu2,
   IconPhoto,
   IconPlus,
   IconRefresh,
@@ -17,6 +18,7 @@ import {
   IconTrash,
   IconVideo,
   IconWand,
+  IconX,
 } from "@tabler/icons-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { GenerateStudio } from "@/components/generate/GenerateStudio";
@@ -85,27 +87,27 @@ function statusLabel(status: SessionTask["status"]) {
 function getAspectClass(aspectRatio?: string | null) {
   switch (aspectRatio) {
     case "9:16":
-      return "aspect-[9/16] w-full max-w-[240px]";
+      return "aspect-[9/16] w-full max-w-[180px]";
     case "3:4":
-      return "aspect-[3/4] w-full max-w-[280px]";
+      return "aspect-[3/4] w-full max-w-[215px]";
     case "4:5":
-      return "aspect-[4/5] w-full max-w-[300px]";
+      return "aspect-[4/5] w-full max-w-[235px]";
     case "1:1":
-      return "aspect-square w-full max-w-[320px]";
+      return "aspect-square w-full max-w-[260px]";
     case "4:3":
-      return "aspect-[4/3] w-full max-w-[380px]";
+      return "aspect-[4/3] w-full max-w-[320px]";
     case "16:9":
-      return "aspect-[16/9] w-full max-w-[440px]";
+      return "aspect-[16/9] w-full max-w-[360px]";
     case "21:9":
-      return "aspect-[21/9] w-full max-w-[480px]";
+      return "aspect-[21/9] w-full max-w-[400px]";
     case "3:2":
-      return "aspect-[3/2] w-full max-w-[400px]";
+      return "aspect-[3/2] w-full max-w-[330px]";
     case "2:3":
-      return "aspect-[2/3] w-full max-w-[260px]";
+      return "aspect-[2/3] w-full max-w-[205px]";
     case "5:4":
-      return "aspect-[5/4] w-full max-w-[350px]";
+      return "aspect-[5/4] w-full max-w-[290px]";
     default:
-      return "aspect-[16/9] w-full max-w-[420px]";
+      return "aspect-[16/9] w-full max-w-[360px]";
   }
 }
 
@@ -113,7 +115,7 @@ function TaskPreview({ task, compact = false }: { task: SessionTask; compact?: b
   const video = isVideoTask(task);
   const mediaClass = compact
     ? "size-[48px] rounded-xl object-cover"
-    : "block max-h-[380px] max-w-[min(100%,480px)] rounded-2xl border border-white/[0.08] bg-[#0c0c0f] object-contain shadow-2xl";
+    : "block max-h-[280px] max-w-[min(100%,360px)] rounded-2xl border border-white/[0.08] bg-[#0c0c0f] object-contain shadow-2xl";
 
   if (compact) {
     if (task.status === "SUCCEEDED" && task.resultUrl) {
@@ -234,27 +236,27 @@ function ThreadTask({ task }: { task: SessionTask }) {
   const prompt = task.prompt.trim() || (video ? "Animate the reference image." : "Create an image.");
 
   return (
-    <article className="group w-full py-8 first:pt-0 sm:py-10">
-      <div className="flex min-w-0 items-start gap-4 sm:gap-5">
-        <span className="mt-0.5 inline-flex shrink-0 items-center rounded-lg border border-fuchsia-400/30 bg-fuchsia-500/[0.08] px-3 py-2 text-xs font-bold leading-4 tracking-wide text-fuchsia-400">
+    <article className="session-task group w-full py-6 first:pt-0 sm:py-7">
+      <div className="session-task-prompt flex min-w-0 items-start gap-4 sm:gap-5">
+        <span className="mt-0.5 inline-flex shrink-0 items-center rounded-md border border-fuchsia-400/25 bg-fuchsia-500/[0.06] px-2.5 py-1 text-[10px] font-bold leading-4 tracking-wide text-fuchsia-400">
           PROMPT
         </span>
-        <p className="line-clamp-3 max-w-5xl pt-0.5 text-[16px] leading-7 text-zinc-500 sm:text-lg sm:leading-7">&quot;{prompt}&quot;</p>
+        <p className="line-clamp-3 max-w-[680px] pt-0.5 text-sm leading-5 text-zinc-500 sm:text-[15px] sm:leading-6">&quot;{prompt}&quot;</p>
       </div>
 
-      <div className="mt-6">
+      <div className="session-task-preview mt-6">
         <TaskPreview task={task} />
       </div>
 
-      <div className="mt-3 flex items-center justify-between gap-4">
-        <span className="inline-flex items-center gap-2 text-xs font-medium text-zinc-500">
+      <div className="session-task-footer mt-3 flex items-center justify-between gap-4">
+        <span className="session-task-caption inline-flex items-center gap-2 text-xs font-medium text-zinc-500">
           {video ? <IconVideo className="size-4" stroke={1.8} /> : <IconSparkles className="size-4" stroke={1.8} />}
           {video ? "RenderPop Video" : "RenderPop Image"}
           {!TERMINAL.has(task.status) ? <span className="inline-flex items-center gap-1.5 text-zinc-600"><IconLoader2 className="size-3 animate-spin" />{statusLabel(task.status)}</span> : null}
           {failed ? <span className="text-rose-300">{statusLabel(task.status)}</span> : null}
         </span>
 
-        <div className="flex items-center gap-2 opacity-80 transition group-hover:opacity-100">
+        <div className="session-task-actions flex items-center gap-2 opacity-80 transition group-hover:opacity-100">
           <button type="button" className="session-action" aria-label="Enhance result"><IconWand className="size-4" stroke={1.7} /></button>
           <button type="button" className="session-action" aria-label="Regenerate"><IconRefresh className="size-4" stroke={1.7} /></button>
           <button type="button" className="session-action" aria-label="Copy prompt"><IconCopy className="size-4" stroke={1.7} /></button>
@@ -337,6 +339,7 @@ export function CreateWorkspace({ sessionId }: { sessionId?: string }) {
   const [ready, setReady] = useState(false);
   const [creatingSession, setCreatingSession] = useState(false);
   const [loadingSessionId, setLoadingSessionId] = useState<string | null>(null);
+  const [mobileSessionsOpen, setMobileSessionsOpen] = useState(false);
   const pollsRef = useRef(new Map<string, number>());
   const taskNodesRef = useRef(new Map<string, HTMLElement>());
 
@@ -460,17 +463,29 @@ export function CreateWorkspace({ sessionId }: { sessionId?: string }) {
   }, [router]);
 
   const handleSessionSelect = (id: string) => {
+    setMobileSessionsOpen(false);
     if (id === sessionId) return;
     setLoadingSessionId(id);
     router.push(`/create/${id}`);
   };
 
+  useEffect(() => {
+    if (!mobileSessionsOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileSessionsOpen(false);
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [mobileSessionsOpen]);
+
   const isBareCreatePage = !sessionId;
 
   return (
-    <section className={`session-page relative bg-black text-white ${isBareCreatePage ? "h-[calc(100vh-4rem)] overflow-hidden" : "min-h-[calc(100vh-4rem)]"}`}>
+    <section className={`session-page relative w-full overflow-x-hidden bg-black text-white ${isBareCreatePage ? "h-[calc(100svh-4rem)] overflow-hidden" : "min-h-[calc(100svh-4rem)]"}`}>
       {/* Background Ambient Glow */}
-      <div className="pointer-events-none absolute left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[800px] rounded-full bg-[#8e36dc]/12 blur-[140px]" />
+      <div className="pointer-events-none absolute left-1/2 top-1/4 h-[360px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#8e36dc]/[0.07] blur-[150px]" />
 
       {/* Left Navigation Rail (Only show on session or desktop) */}
       <aside className="session-rail fixed bottom-0 left-0 top-16 z-30 hidden w-[76px] border-r border-white/[0.055] bg-[#09090b] py-3 lg:flex lg:flex-col lg:items-center">
@@ -510,11 +525,106 @@ export function CreateWorkspace({ sessionId }: { sessionId?: string }) {
         </div>
       </aside>
 
+      {mobileSessionsOpen ? (
+        <div className="fixed inset-0 z-[60] lg:hidden" role="presentation">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/65 backdrop-blur-[2px]"
+            onClick={() => setMobileSessionsOpen(false)}
+            aria-label="Close sessions"
+          />
+          <aside
+            id="mobile-session-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Creation sessions"
+            className="relative flex h-full w-[min(86vw,360px)] flex-col border-r border-white/[0.1] bg-[#15151a] shadow-[18px_0_50px_rgba(0,0,0,0.45)]"
+          >
+            <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/[0.08] px-5">
+              <span className="text-base font-semibold text-white">Sessions</span>
+              <button
+                type="button"
+                onClick={() => setMobileSessionsOpen(false)}
+                className="inline-flex size-10 items-center justify-center rounded-xl text-zinc-400 transition hover:bg-white/[0.07] hover:text-white active:scale-[0.98]"
+                aria-label="Close sessions"
+              >
+                <IconX className="size-5" stroke={1.8} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-3 py-5">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileSessionsOpen(false);
+                  void createNewSession();
+                }}
+                disabled={creatingSession}
+                className="mb-6 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.05] px-3 text-sm font-medium text-zinc-100 transition hover:border-fuchsia-400/40 hover:bg-fuchsia-400/[0.08] disabled:cursor-wait disabled:opacity-60"
+              >
+                {creatingSession ? <IconLoader2 className="size-4 animate-spin" /> : <IconPlus className="size-4" stroke={2} />}
+                New creation
+              </button>
+
+              <p className="px-2 text-xs font-medium uppercase tracking-[0.14em] text-zinc-500">Recent sessions</p>
+              <div className="mt-3 space-y-1.5">
+                {sessions.map((item) => {
+                  const previewTask = item.tasks.at(-1);
+                  const isSelected = item.id === sessionId;
+                  const isLoadingThis = loadingSessionId === item.id || (!ready && item.id === sessionId);
+                  const summary = previewTask?.prompt.trim() || "Untitled creation";
+
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => handleSessionSelect(item.id)}
+                      className={`flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left transition ${isSelected ? "bg-white/[0.09]" : "hover:bg-white/[0.055]"}`}
+                      aria-current={isSelected ? "page" : undefined}
+                    >
+                      <span className="relative shrink-0">
+                        {previewTask ? (
+                          <TaskPreview task={toSessionTask(previewTask)} compact />
+                        ) : (
+                          <span className="flex size-[48px] items-center justify-center rounded-xl border border-white/[0.1] bg-[#1d1d24] text-fuchsia-400">
+                            <IconSparkles className="size-5" />
+                          </span>
+                        )}
+                        {isLoadingThis ? (
+                          <span className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/60">
+                            <IconLoader2 className="size-4 animate-spin text-fuchsia-400" />
+                          </span>
+                        ) : null}
+                      </span>
+                      <span className={`min-w-0 flex-1 truncate text-sm ${isSelected ? "font-medium text-white" : "text-zinc-400"}`}>
+                        {summary}
+                      </span>
+                    </button>
+                  );
+                })}
+                {!sessions.length ? (
+                  <p className="px-2 py-8 text-center text-sm leading-6 text-zinc-500">Your recent creations will appear here.</p>
+                ) : null}
+              </div>
+            </div>
+          </aside>
+        </div>
+      ) : null}
+
       {/* Main Content View */}
-      <main className={`px-4 lg:ml-[76px] lg:px-10 xl:px-14 ${isBareCreatePage ? "flex h-full flex-col pt-3 pb-[210px]" : "min-h-[calc(100vh-4rem)] pt-7 pb-[340px]"}`}>
-        <div className={`mx-auto flex w-full max-w-[1680px] flex-col ${isBareCreatePage ? "h-full flex-1" : "min-h-[calc(100vh-6rem)]"}`}>
+      <div className={`session-main px-4 lg:ml-[76px] lg:px-10 xl:px-14 ${isBareCreatePage ? "flex h-full flex-col pt-3 pb-[210px]" : "min-h-[calc(100svh-4rem)] pt-7 pb-[300px]"}`}>
+        <div className={`mx-auto flex w-full flex-col ${isBareCreatePage ? "h-full max-w-[1680px] flex-1" : "max-w-[820px]"}`}>
           <div className="mb-5 flex items-center gap-2 text-xs text-zinc-600 lg:hidden">
-            <Link href="/" className="inline-flex items-center gap-1 hover:text-zinc-300"><IconArrowLeft className="size-3.5" /> Back</Link>
+            <button
+              type="button"
+              onClick={() => setMobileSessionsOpen(true)}
+              className="inline-flex min-h-10 items-center gap-2 rounded-lg px-2 text-sm text-zinc-400 transition hover:bg-white/[0.06] hover:text-white active:scale-[0.98]"
+              aria-expanded={mobileSessionsOpen}
+              aria-controls="mobile-session-drawer"
+            >
+              <IconMenu2 className="size-4" stroke={1.8} />
+              Sessions
+            </button>
           </div>
 
           {isBareCreatePage ? (
@@ -537,7 +647,7 @@ export function CreateWorkspace({ sessionId }: { sessionId?: string }) {
               ))}
             </div>
           ) : (
-            <section className="flex min-h-[calc(100vh-12rem)] items-center justify-center text-center">
+            <section className="flex min-h-[calc(100svh-12rem)] items-center justify-center text-center">
               <div>
                 <h1 className="text-xl font-semibold text-white">This creation session is unavailable</h1>
                 <p className="mt-3 text-sm text-zinc-500">Start a new task from below to create a session.</p>
@@ -545,16 +655,18 @@ export function CreateWorkspace({ sessionId }: { sessionId?: string }) {
             </section>
           )}
         </div>
-      </main>
+      </div>
 
-      {/* Floating Creen-style Bottom Studio Studio Control Bar */}
-      <div className="fixed bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 z-40 rounded-[20px] sm:rounded-[22px] border border-white/[0.1] bg-[#111116]/90 p-1.5 shadow-[0_20px_70px_rgba(0,0,0,0.6)] backdrop-blur-2xl lg:left-[116px] lg:right-10 xl:left-[132px] xl:right-14">
-        <GenerateStudio
-          variant="session"
-          sessionId={sessionId}
-          createSessionForTask={createSessionForTask}
-          onTaskCreated={onTaskCreated}
-        />
+      {/* Floating session composer stays within the same visual column as task history. */}
+      <div className="session-composer-shell fixed bottom-2 left-2 right-2 z-40 sm:bottom-4 sm:left-4 sm:right-4 lg:left-[76px] lg:right-0">
+        <div className="mx-auto w-full max-w-[960px] rounded-[18px] border border-white/[0.1] bg-[#111116]/90 p-1.5 shadow-[0_20px_70px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:rounded-[20px]">
+          <GenerateStudio
+            variant="session"
+            sessionId={sessionId}
+            createSessionForTask={createSessionForTask}
+            onTaskCreated={onTaskCreated}
+          />
+        </div>
       </div>
     </section>
   );

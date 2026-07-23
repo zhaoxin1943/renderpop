@@ -49,6 +49,8 @@
     "videoPromptPlaceholder": "Describe el movimiento, la cámara o la escena...",
     "modeFast": "Rápido (Gratis)",
     "modePro": "Pro (12 Créditos)",
+    "modeFastCompact": "Rápido",
+    "modeProCompact": "Pro",
     "btnGenerate": "Generar",
     "btnGenerateVideo": "Generar video",
     "btnFreeLabel": "Gratis",

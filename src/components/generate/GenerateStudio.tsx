@@ -589,7 +589,7 @@ export function GenerateStudio({
 
   return (
     <div className={`w-full ${variant === "session" ? "session-composer" : ""}`}>
-      <div className="flex items-center gap-1 border-b border-white/[0.09] px-1">
+      <div className={`flex items-center gap-1 px-1 ${variant === "session" ? "session-composer-tabs" : ""}`}>
         <button
           type="button"
           onClick={() => selectWorkspace("IMAGE")}
@@ -651,7 +651,7 @@ export function GenerateStudio({
             </span>
           </div>
         ) : null}
-        <div className="relative flex items-start gap-4 sm:gap-5">
+        <div className={`relative flex gap-4 sm:gap-5 ${variant === "session" ? "session-composer-input-row items-center" : "items-start"}`}>
           <div className="relative shrink-0">
             <input
               ref={isVideo ? videoFileInputRef : imageFileInputRef}
@@ -668,7 +668,7 @@ export function GenerateStudio({
               type="button"
               onClick={() => openImagePicker(isVideo ? "VIDEO" : "IMAGE")}
               disabled={busy || uploading || imageUploading}
-              className={`group relative flex h-28 w-20 flex-col items-center justify-center overflow-hidden rounded-xl border text-xs font-medium transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:h-32 sm:w-24 ${(isVideo ? videoAsset : imageAsset) ? "border-white/[0.16] bg-[#202025]" : "border-dashed border-white/[0.2] bg-white/[0.025] text-zinc-500 hover:border-[#dc499c]/75 hover:bg-[#dc499c]/[0.08] hover:text-zinc-100"}`}
+              className={`${variant === "session" ? "session-upload-button" : ""} group relative flex h-28 w-20 flex-col items-center justify-center overflow-hidden rounded-xl border text-xs font-medium transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:h-32 sm:w-24 ${(isVideo ? videoAsset : imageAsset) ? "border-white/[0.16] bg-[#202025]" : "border-dashed border-white/[0.2] bg-white/[0.025] text-zinc-500 hover:border-[#dc499c]/75 hover:bg-[#dc499c]/[0.08] hover:text-zinc-100"}`}
               aria-label={(isVideo ? videoAsset : imageAsset) ? t("hero.videoChangeImage") : t("hero.videoUpload")}
             >
               {(isVideo ? videoAsset : imageAsset) ? (
@@ -707,7 +707,7 @@ export function GenerateStudio({
             <textarea
               ref={textareaRef}
               id={promptId}
-              rows={5}
+              rows={variant === "session" ? 2 : 5}
               value={prompt}
               onInput={(e) => setPrompt(e.currentTarget.value)}
               placeholder={isVideo ? t("hero.videoPromptPlaceholder") : isImageToImage ? t("hero.imageToImagePromptPlaceholder") : t("hero.inputPlaceholder")}
@@ -718,7 +718,7 @@ export function GenerateStudio({
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-2 border-t border-white/[0.08] pt-3 sm:pt-4">
+        <div className={`flex items-center justify-between gap-2 pt-3 sm:pt-4 ${variant === "session" ? "session-composer-toolbar" : ""}`}>
           {isVideo ? (
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar min-w-0 flex-1">
               <button
@@ -734,23 +734,29 @@ export function GenerateStudio({
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-2 overflow-x-auto sm:overflow-visible no-scrollbar min-w-0 flex-1 py-0.5">
+            <div className="session-composer-controls flex min-w-0 flex-1 items-center gap-2 overflow-x-auto no-scrollbar py-0.5 sm:overflow-visible">
               <div className="inline-flex shrink-0 rounded-lg border border-white/[0.1] bg-[#17171a] p-1">
                 <button
                   type="button"
                   onClick={() => selectImageMode("FAST")}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs font-medium transition ${mode === "FAST" ? "bg-white/[0.1] text-white" : "text-zinc-500 hover:text-white"}`}
+                  className={`session-mode-button inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs font-medium transition ${mode === "FAST" ? "bg-white/[0.1] text-white" : "text-zinc-500 hover:text-white"}`}
+                  title={t("hero.modeFast")}
                 >
                   <IconBolt className="size-3.5" stroke={1.9} />
-                  {t("hero.modeFast")}
+                  <span className="sm:hidden">{t("hero.modeFastCompact")}</span>
+                  <span className="hidden sm:inline">{t("hero.modeFast")}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => selectImageMode("PRO")}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs font-medium transition ${mode === "PRO" ? "bg-[#8e36dc] text-white" : "text-zinc-500 hover:text-white"}`}
+                  className={`session-mode-button inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs font-medium transition ${mode === "PRO" ? "bg-[#8e36dc] text-white" : "text-zinc-500 hover:text-white"}`}
+                  title={t("hero.modePro")}
                 >
                   <IconCrown className="size-3.5" stroke={1.75} />
-                  {t("hero.modePro")}
+                  <span className="sm:hidden">
+                    {t("hero.modeProCompact")}<span className="ml-1 hidden min-[375px]:inline">12</span>
+                  </span>
+                  <span className="hidden sm:inline">{t("hero.modePro")}</span>
                 </button>
               </div>
               {isImageToImage ? (
@@ -768,7 +774,7 @@ export function GenerateStudio({
                   </span>
                 </>
               ) : (
-                <div className="relative flex shrink-0 items-center gap-1.5">
+                <div className="session-image-options relative flex shrink-0 items-center gap-1.5">
                   <button
                     type="button"
                     onClick={() => setImageOptionsOpen((v) => !v)}

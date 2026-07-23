@@ -72,34 +72,41 @@ body {
   color: #f4f4f5;
 }
 
-.session-composer > div:first-child {
-  min-height: 45px;
+.session-composer-tabs {
+  min-height: 42px;
   padding-inline: 12px;
-  border-color: rgba(255, 255, 255, 0.075);
 }
 
-.session-composer > div:first-child button {
-  padding-top: 12px;
-  padding-bottom: 12px;
+.session-composer-tabs button {
+  padding-top: 9px;
+  padding-bottom: 9px;
+  font-size: 13px;
 }
 
 .session-composer form {
-  min-height: 178px;
-  padding: 22px 20px 14px;
+  min-height: 138px;
+  padding: 12px 16px 10px;
 }
 
-.session-composer form > .relative.flex {
-  gap: 18px;
+.session-composer-input-row {
+  gap: 12px;
+  min-height: 82px;
 }
 
 .session-composer form textarea {
-  min-height: 104px;
-  font-size: 15px;
+  min-height: 64px;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
-.session-composer form > div:last-child {
-  margin-top: 14px;
-  padding-top: 14px;
+.session-composer-toolbar {
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.session-composer .session-upload-button {
+  height: 72px;
+  width: 68px;
 }
 
 .session-composer form [type="submit"] {
@@ -114,12 +121,166 @@ body {
 }
 
 .session-page {
-  min-height: calc(100vh - 4rem);
+  min-height: calc(100svh - 4rem);
+}
+
+@media (max-width: 639px) {
+  .session-main {
+    padding-top: 1.25rem;
+    padding-bottom: 19rem;
+  }
+
+  .session-task {
+    padding-top: 1.25rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .session-task-prompt {
+    display: block;
+  }
+
+  .session-task-prompt > span {
+    margin-top: 0;
+  }
+
+  .session-task-prompt > p {
+    max-width: none;
+    margin-top: 0.5rem;
+    padding-top: 0;
+    font-size: 0.875rem;
+    line-height: 1.35rem;
+  }
+
+  .session-task-preview {
+    margin-top: 1rem;
+  }
+
+  .session-task img,
+  .session-task video {
+    max-height: 240px;
+    max-width: min(100%, 300px);
+  }
+
+  .session-task-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .session-task-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .session-composer-shell {
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    left: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .session-composer-shell > div {
+    border-radius: 16px;
+    padding: 1px;
+  }
+
+  .session-composer-tabs {
+    min-height: 50px;
+    padding-inline: 12px;
+  }
+
+  .session-composer-tabs button {
+    gap: 0.5rem;
+    padding: 11px 12px;
+    font-size: 13px;
+  }
+
+  .session-composer form {
+    min-height: 0;
+    padding: 14px 16px 12px;
+  }
+
+  .session-composer form > .session-composer-input-row {
+    min-height: 112px;
+    gap: 14px;
+  }
+
+  .session-composer .session-upload-button {
+    height: 84px;
+    width: 76px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+
+  .session-composer .session-upload-button svg {
+    margin-bottom: 0.375rem;
+    height: 20px;
+    width: 20px;
+  }
+
+  .session-composer form textarea {
+    min-height: 88px;
+    padding-top: 4px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .session-composer-toolbar {
+    margin-top: 12px;
+    padding-top: 2px;
+  }
+
+  .session-composer-toolbar .session-composer-controls {
+    position: relative;
+    gap: 6px;
+    overflow-x: visible;
+    padding-right: 42px;
+  }
+
+  .session-composer-toolbar .session-mode-button {
+    gap: 0.3rem;
+    padding: 0.4rem 0.45rem;
+  }
+
+  .session-composer-toolbar .session-image-options {
+    position: static;
+    gap: 4px;
+  }
+
+  .session-composer-toolbar .session-image-options > button[aria-label="Settings"] {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    z-index: 1;
+    transform: translateY(-50%);
+  }
+
+  @media (max-width: 374px) {
+    .session-composer-toolbar {
+      gap: 6px;
+    }
+
+    .session-composer-toolbar .session-image-options {
+      gap: 4px;
+    }
+
+    .session-composer-toolbar .session-image-options > button:first-child {
+      padding-inline: 0.55rem;
+    }
+
+    .session-composer-toolbar .session-image-options > button:first-child svg {
+      display: none;
+    }
+  }
+
+  .session-composer form [type="submit"] {
+    width: 42px;
+    height: 42px;
+  }
 }
 
 @media (min-width: 1024px) {
   .session-composer form {
-    padding-inline: 22px;
+    padding-inline: 18px;
   }
 }
 
@@ -168,4 +329,3 @@ html, body {
 .animate-shimmer {
   animation: shimmer 2.5s infinite;
 }
-
