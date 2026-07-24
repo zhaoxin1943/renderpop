@@ -103,3 +103,34 @@ export async function apiFetch<T>(
 
   return data as T;
 }
+
+export async function fetchProducts() {
+  return apiFetch<import("@/lib/types").ProductListResponse>("/billing/products");
+}
+
+export async function createCheckoutSession(params: {
+  productCode: string;
+  successUrl?: string;
+  cancelUrl?: string;
+}) {
+  const idempotencyKey =
+    typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `checkout-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+  return apiFetch<import("@/lib/types").CheckoutSessionResponse>(
+    "/billing/checkout-sessions",
+    {
+      method: "POST",
+      headers: {
+        "Idempotency-Key": idempotencyKey,
+      },
+      body: {
+        product_code: params.productCode,
+        success_url: params.successUrl,
+        cancel_url: params.cancelUrl,
+      },
+    },
+  );
+}
+

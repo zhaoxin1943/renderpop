@@ -178,3 +178,37 @@ export type ShowcaseListResponse = {
 export const ASPECT_RATIOS = ["9:16", "16:9", "1:1", "3:4", "4:3"] as const;
 export type AspectRatio = (typeof ASPECT_RATIOS)[number];
 export const DEFAULT_ASPECT_RATIO: AspectRatio = "9:16";
+
+export type ProductType = "SUBSCRIPTION" | "CREDIT_PACK";
+
+export type ProductResponse = {
+  code: string;
+  name: string;
+  product_type: ProductType;
+  plan_code: string | null;
+  billing_interval: string | null;
+  credits_granted: number;
+  amount_minor: number;
+  currency: string;
+  environment: string;
+};
+
+export type ProductListResponse = {
+  items: ProductResponse[];
+};
+
+export type CheckoutBody = {
+  product_code: string;
+  success_url?: string | null;
+  cancel_url?: string | null;
+};
+
+export type CheckoutSessionResponse = {
+  order_id: string;
+  status: string;
+  checkout_url: string | null;
+  session_id: string | null;
+  reused: boolean;
+  stub: boolean | null;
+};
+
