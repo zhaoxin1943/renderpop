@@ -110,6 +110,20 @@ export type GenerationOptionsResponse = {
   jobs: GenerationJobOptions[];
 };
 
+export type DanceTemplate = {
+  id: string;
+  title: string;
+  duration_seconds: number;
+  video_url: string;
+  poster_url: string | null;
+  aspect_ratio: string;
+  sort_order: number;
+};
+
+export type DanceTemplatesResponse = {
+  templates: DanceTemplate[];
+};
+
 export type UploadIntentResponse = {
   asset_id: string;
   upload_url: string;

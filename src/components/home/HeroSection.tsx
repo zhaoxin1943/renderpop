@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useI18n } from "@/i18n/I18nContext";
 import { GenerateStudio } from "@/components/generate/GenerateStudio";
 import type { StudioTaskSubmission } from "@/lib/studio-sessions";
@@ -27,13 +28,15 @@ export function HeroSection({
           {t("hero.title")}
         </h1>
         <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.12] bg-[#121215] shadow-[0_24px_80px_rgba(0,0,0,0.42)]">
-          <GenerateStudio
-            seedPrompt={seedPrompt}
-            seedAspect={seedAspect}
-            onSeedConsumed={onSeedConsumed}
-            onTaskCreated={onTaskCreated}
-            createSessionForTask={createSessionForTask}
-          />
+          <Suspense fallback={<div className="h-[244px] animate-pulse bg-white/[0.02]" />}>
+            <GenerateStudio
+              seedPrompt={seedPrompt}
+              seedAspect={seedAspect}
+              onSeedConsumed={onSeedConsumed}
+              onTaskCreated={onTaskCreated}
+              createSessionForTask={createSessionForTask}
+            />
+          </Suspense>
         </div>
       </div>
     </section>

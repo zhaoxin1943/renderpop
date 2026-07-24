@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   IconAlertTriangle,
@@ -938,12 +938,14 @@ export function CreateWorkspace({ sessionId }: { sessionId?: string }) {
       {/* Floating session composer stays within the same visual column as task history. */}
       <div className="session-composer-shell fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:left-4 sm:right-4 lg:left-[76px] lg:right-0">
         <div className="mx-auto w-full max-w-[960px] rounded-t-2xl rounded-b-none border-t border-white/[0.1] border-x-0 border-b-0 bg-[#111116] p-1.5 shadow-[0_-10px_40px_rgba(0,0,0,0.7)] backdrop-blur-2xl sm:rounded-[20px] sm:border sm:border-white/[0.1] sm:shadow-[0_20px_70px_rgba(0,0,0,0.6)]">
-          <GenerateStudio
-            variant="session"
-            sessionId={sessionId}
-            createSessionForTask={createSessionForTask}
-            onTaskCreated={onTaskCreated}
-          />
+          <Suspense fallback={<div className="h-[164px] animate-pulse rounded-2xl bg-white/[0.025]" />}>
+            <GenerateStudio
+              variant="session"
+              sessionId={sessionId}
+              createSessionForTask={createSessionForTask}
+              onTaskCreated={onTaskCreated}
+            />
+          </Suspense>
         </div>
       </div>
 
