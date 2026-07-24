@@ -4,8 +4,13 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { HeroSection } from "@/components/home/HeroSection";
 import { ShowcaseSection } from "@/components/home/ShowcaseSection";
-import { PricingPreviewSection } from "@/components/home/PricingPreviewSection";
-import { ReviewSection } from "@/components/home/ReviewSection";
+import { ToolsGridSection } from "@/components/home/ToolsGridSection";
+import { EnginesLineupSection } from "@/components/home/EnginesLineupSection";
+import { WhatIsSection } from "@/components/home/WhatIsSection";
+import { HowItWorksSection } from "@/components/home/HowItWorksSection";
+import { WhyChooseUsSection } from "@/components/home/WhyChooseUsSection";
+import { UseCasesSection } from "@/components/home/UseCasesSection";
+import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { FaqSection } from "@/components/home/FaqSection";
 import { SeoLinksSection } from "@/components/home/SeoLinksSection";
 import { apiFetch } from "@/lib/api";
@@ -52,11 +57,26 @@ export function HomeClient() {
       {/* 2. Seamless Interactive Showcase Grid */}
       <ShowcaseSection onTry={onTry} />
 
-      {/* 3. Restrained Pricing Matrix */}
-      <PricingPreviewSection />
+      {/* 3. AI Tools & Capabilities Grid */}
+      <ToolsGridSection />
 
-      {/* 4. Rich Social Proof & Keyword Reviews */}
-      <ReviewSection />
+      {/* 4. Engines Lineup (Powered by World's Leading AI Models Array) */}
+      <EnginesLineupSection />
+
+      {/* 5. What Is RenderPop AI (SEO Narrative & GPT Image 2 Fine-tuning) */}
+      <WhatIsSection />
+
+      {/* 5. How to Use in 3 Simple Steps */}
+      <HowItWorksSection />
+
+      {/* 6. Why Creators Choose RenderPop Over Other Generators (Stat Bar & 6 Bento Grid) */}
+      <WhyChooseUsSection />
+
+      {/* 7. Realistic Human Portrait Use Cases */}
+      <UseCasesSection />
+
+      {/* 8. Community Reviews & Social Proof */}
+      <TestimonialsSection />
 
       {/* 5. Single-Hairline Separator FAQ */}
       <FaqSection />

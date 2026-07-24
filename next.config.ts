@@ -18,6 +18,14 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "renderpop-assets.s3.us-east-2.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.s3.us-east-2.amazonaws.com",
+      },
+      {
+        protocol: "https",
         hostname: "renderpop-assets.s3.amazonaws.com",
       },
       {
