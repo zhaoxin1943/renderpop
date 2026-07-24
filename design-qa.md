@@ -154,3 +154,40 @@ No actionable P0, P1, or P2 differences remain.
 - Copy and interaction: the page exposes one direct action; the legal consent appears in the photo chooser, where users act on it. The CTA still opens that chooser and its photo-format requirements.
 
 final result: passed
+
+### Iteration 5 — desktop stage + confirmation console
+
+- Source visual truth: the browser-rendered desktop baseline at `/private/tmp/renderpop-dance-desktop-before.png`, grounded by the user-provided starting state at `/var/folders/vx/gcrlvvbx7_1_shz3qrlw85xc0000gn/T/codex-clipboard-5210a9a4-6be8-4611-b0ac-55b73b21377d.png`.
+- Browser-rendered implementation: `/private/tmp/renderpop-dance-desktop-stage-console.png`.
+- Viewport and normalization: the before and after browser captures are both `1600 × 1313` px full-page images from the same desktop state, so they were opened together at matching pixel dimensions for the visual comparison. The supplied starting screenshot is a wider browser capture and was used only to confirm the existing desktop visual language, not to compare literal placement.
+- State: English, no photo or custom video, template 1 active, muted autoplay. The desktop template 2 state was also verified at `/private/tmp/renderpop-dance-desktop-template-selected.png`.
+
+**Findings**
+
+No actionable P0, P1, or P2 differences remain.
+
+- Fonts and typography: the existing Geist display hierarchy and compact metadata treatment remain intact. The selected-template summary uses a deliberately quiet label/name/count stack, so it reinforces the decision without competing with the headline.
+- Spacing and layout rhythm: the former hard two-column split is softened by a more balanced desktop grid, closer stage controls, and a bottom-edge template rail. The right-hand content reads as one compact confirmation path rather than a second competing landing-page hero.
+- Colors and visual tokens: the black stage, subdued white borders, translucent controls, and RenderPop violet-to-coral CTA remain consistent. The removed desktop divider reduces a visual break without changing the brand's dark, high-contrast environment.
+- Image quality and asset fidelity: the player and template rail use the existing real S3 MP4/PNG catalog. The foreground player keeps `object-contain` on desktop as well, preserving each dancer's framing rather than cropping for fill.
+- Copy and content: the product promise, one-photo explanation, duration, primary upload, custom-video fallback, and consent copy remain unchanged. The active dance's existing title and position now provide direct context for the primary action.
+- Interaction and accessibility: desktop template buttons retain names, selection state, keyboard navigation, visible focus rings, and 44px playback controls. Clicking `Choose dance template 2` updated the active video and the console summary from `Blue Tempo · 1 / 9` to `Soft Bounce · 2 / 9`.
+
+**Focused Region Evidence**
+
+- The template rail and confirmation summary were examined in the selected-template browser capture because that linkage is the new desktop-specific behavior. Its selected outline, poster, title, and numeric position are all visible and synchronized.
+
+**Primary Interactions Tested**
+
+- `Choose dance template 2` is unique, interactive, and updates the preview and selected-template console.
+- Desktop playback, audio, previous, and next controls remain exposed with their existing accessible names.
+- The primary upload action remains visible and retains the existing authenticated photo-upload path; no media was uploaded or generation started.
+- Browser console: no errors after the final desktop interaction.
+- Type check, component lint, and the production build passed.
+
+**Accepted intentional changes**
+
+- The desktop rail replaces the former dot/pagination and swipe hint. This follows the agreed mouse-first control model while preserving keyboard arrows and explicit previous/next controls.
+- The desktop stage is slightly shorter to make the real template rail visible within the first composition; mobile uses none of these `lg:` overrides and was separately rechecked at `390 × 844` in `/private/tmp/renderpop-dance-mobile-regression-final.png`.
+
+final result: passed

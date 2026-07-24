@@ -492,7 +492,7 @@ export function DanceStudio() {
         onChange={onCustomVideoInput}
       />
 
-      <div className="lg:grid lg:min-h-[calc(100svh-4rem)] lg:grid-cols-[minmax(0,1.95fr)_minmax(360px,1fr)]">
+      <div className="lg:grid lg:min-h-[calc(100svh-4rem)] lg:grid-cols-[minmax(0,1.16fr)_minmax(30rem,0.84fr)]">
         <section
           className="relative isolate overflow-hidden border-white/[0.08] lg:border-r"
           aria-label={t("dance.previewLabel")}
@@ -515,7 +515,7 @@ export function DanceStudio() {
           ) : null}
           <div className="absolute inset-0 hidden bg-black/25 lg:block" />
 
-          <div className="relative flex h-[min(64svh,570px)] items-center justify-center overflow-hidden bg-[#08080a] lg:min-h-[calc(100svh-4rem)] lg:h-auto lg:px-24 lg:py-7">
+          <div className="relative flex h-[min(64svh,570px)] items-center justify-center overflow-hidden bg-[#08080a] lg:min-h-[calc(100svh-4rem)] lg:h-auto lg:px-16 lg:py-8">
             {posterUrl ? (
               <div className="absolute inset-[-10%] scale-110 opacity-45 blur-2xl lg:hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -528,7 +528,7 @@ export function DanceStudio() {
               </div>
             ) : null}
             <div
-              className="relative h-full w-full overflow-hidden bg-transparent shadow-[0_24px_80px_rgba(0,0,0,0.5)] lg:h-[min(82svh,850px)] lg:w-auto lg:aspect-[9/16] lg:rounded-2xl lg:border lg:border-white/[0.1] lg:bg-black"
+              className="relative h-full w-full overflow-hidden bg-transparent shadow-[0_24px_80px_rgba(0,0,0,0.5)] lg:h-[min(78svh,760px)] lg:w-auto lg:aspect-[9/16] lg:rounded-2xl lg:border lg:border-white/[0.1] lg:bg-black"
               onTouchStart={onTouchStart}
               onTouchEnd={onTouchEnd}
             >
@@ -542,7 +542,7 @@ export function DanceStudio() {
                 muted={muted}
                 playsInline
                 preload="auto"
-                className="relative size-full object-contain lg:aspect-auto lg:object-cover"
+                className="relative size-full object-contain lg:aspect-auto"
                 onPlay={() => setPlaying(true)}
                 onPause={() => setPlaying(false)}
               >
@@ -572,7 +572,7 @@ export function DanceStudio() {
               <button
                 type="button"
                 onClick={() => setPlaying((current) => !current)}
-                className="absolute bottom-5 left-5 z-20 inline-flex size-12 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:bottom-6 lg:left-6"
+                className="absolute bottom-5 left-5 z-20 inline-flex size-12 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:bottom-[10.5rem] lg:left-6"
                 aria-label={
                   playing ? t("dance.pauseVideo") : t("dance.playVideo")
                 }
@@ -587,7 +587,7 @@ export function DanceStudio() {
               <button
                 type="button"
                 onClick={() => setMuted((current) => !current)}
-                className="absolute bottom-5 right-5 z-20 inline-flex size-12 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:bottom-6 lg:right-6"
+                className="absolute bottom-5 right-5 z-20 inline-flex size-12 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:bottom-[10.5rem] lg:right-6"
                 aria-label={muted ? t("dance.unmuteVideo") : t("dance.muteVideo")}
               >
                 {muted ? (
@@ -597,7 +597,7 @@ export function DanceStudio() {
                 )}
               </button>
 
-              <div className="absolute inset-x-16 bottom-7 hidden flex-col items-center gap-2.5 lg:flex lg:bottom-6">
+              <div className="absolute inset-x-16 bottom-7 hidden flex-col items-center gap-2.5">
                 <div className="flex items-center gap-2" aria-label={t("dance.templatePosition")}>
                   {templates.map((template, index) => (
                     <button
@@ -631,7 +631,7 @@ export function DanceStudio() {
                 <button
                   type="button"
                   onClick={goPrevious}
-                  className="absolute left-5 top-1/2 hidden size-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:scale-105 hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:inline-flex"
+                  className="absolute left-5 top-1/2 hidden size-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:scale-105 hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:left-[calc(50%-18rem)] lg:inline-flex"
                   aria-label={t("dance.previousDance")}
                 >
                   <IconArrowLeft className="size-6" stroke={1.8} />
@@ -639,7 +639,7 @@ export function DanceStudio() {
                 <button
                   type="button"
                   onClick={goNext}
-                  className="absolute right-5 top-1/2 hidden size-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:scale-105 hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:inline-flex"
+                  className="absolute right-5 top-1/2 hidden size-14 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:scale-105 hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:right-[calc(50%-18rem)] lg:inline-flex"
                   aria-label={t("dance.nextDance")}
                 >
                   <IconArrowRight className="size-6" stroke={1.8} />
@@ -649,10 +649,10 @@ export function DanceStudio() {
           </div>
 
           {!customVideo ? (
-            <div className="relative z-20 -mt-5 lg:hidden">
+            <div className="relative z-20 -mt-5 lg:absolute lg:inset-x-0 lg:bottom-7 lg:mx-auto lg:mt-0 lg:max-w-[34rem]">
               <div
                 ref={templateRailRef}
-                className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:gap-2 lg:px-0 lg:pb-3"
                 aria-label={t("dance.templatePosition")}
               >
                 {templates.map((template, index) => {
@@ -663,7 +663,7 @@ export function DanceStudio() {
                       type="button"
                       data-template-index={index}
                       onClick={() => selectTemplate(index)}
-                      className={`relative h-36 w-28 shrink-0 snap-center overflow-hidden rounded-2xl border bg-zinc-900 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc66df] ${
+                      className={`relative h-36 w-28 shrink-0 snap-center overflow-hidden rounded-2xl border bg-zinc-900 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc66df] lg:h-32 lg:w-[5.1rem] lg:rounded-xl ${
                         selected
                           ? "border-[#d95ee4] ring-2 ring-[#d95ee4]/70"
                           : "border-white/[0.16] opacity-75 hover:opacity-100"
@@ -686,7 +686,7 @@ export function DanceStudio() {
                   );
                 })}
               </div>
-              <div className="mx-auto h-1 w-[58%] max-w-[14rem] rounded-full bg-gradient-to-r from-[#7747ec] via-[#d83eb6] to-[#ef6690]" />
+              <div className="mx-auto h-1 w-[58%] max-w-[14rem] rounded-full bg-gradient-to-r from-[#7747ec] via-[#d83eb6] to-[#ef6690] lg:max-w-[18rem]" />
             </div>
           ) : (
             <p className="px-5 pt-5 text-center text-sm text-zinc-400 lg:hidden">
@@ -694,7 +694,7 @@ export function DanceStudio() {
             </p>
           )}
 
-          <div className="relative hidden items-center justify-center gap-3 bg-[#050505] py-4 text-sm text-zinc-500 lg:absolute lg:inset-x-0 lg:bottom-3 lg:flex lg:bg-transparent lg:text-zinc-300">
+          <div className="relative hidden items-center justify-center gap-3 bg-[#050505] py-4 text-sm text-zinc-500">
             <IconArrowLeft className="size-4" stroke={1.7} />
             <span>
               {customVideo
@@ -705,7 +705,7 @@ export function DanceStudio() {
           </div>
         </section>
 
-        <section className="flex min-h-0 items-start border-white/[0.08] bg-[#050505] px-5 pb-8 pt-4 sm:px-10 lg:min-h-0 lg:items-center lg:border-l lg:px-[clamp(3rem,5vw,7rem)] lg:py-16">
+        <section className="flex min-h-0 items-start bg-[#050505] px-5 pb-8 pt-4 sm:px-10 lg:min-h-0 lg:items-center lg:px-[clamp(2.75rem,5vw,6.5rem)] lg:py-16">
           <div className="mx-auto w-full max-w-xl text-center lg:mx-0 lg:max-w-md lg:text-left">
             <div className="hidden items-center gap-2 text-sm font-medium text-[#d86ab8] lg:inline-flex">
               <IconSparkles className="size-4" stroke={2} />
@@ -721,6 +721,29 @@ export function DanceStudio() {
               <IconClock className="size-4 shrink-0" stroke={1.8} />
               <span>{t("dance.easeLine")}</span>
             </div>
+
+            {!customVideo ? (
+              <div className="mt-7 hidden items-center gap-3 border-y border-white/[0.08] py-3 lg:flex">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={activeTemplate.poster_url ?? ""}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-12 w-9 rounded-md object-cover"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[0.68rem] font-medium uppercase tracking-[0.14em] text-zinc-500">
+                    {t("dance.trendingDance")}
+                  </p>
+                  <p className="mt-0.5 truncate text-sm font-medium text-zinc-200">
+                    {activeTemplate.title}
+                  </p>
+                </div>
+                <span className="text-sm tabular-nums text-zinc-500">
+                  {selectedIndex + 1} / {templates.length}
+                </span>
+              </div>
+            ) : null}
 
             {photo ? (
               <div className="mt-9 rounded-2xl border border-white/[0.1] bg-white/[0.035] p-4 text-left">
@@ -757,7 +780,7 @@ export function DanceStudio() {
               type="button"
               onClick={photo ? generateVideo : openPhotoSheet}
               disabled={photoUploading || generating}
-              className={`brand-cta mx-auto inline-flex h-12 w-4/5 max-w-[20rem] items-center justify-center gap-2 rounded-xl px-4 text-base font-semibold text-white shadow-none transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-55 lg:mx-0 lg:mt-9 lg:h-[4.5rem] lg:w-full lg:max-w-none lg:gap-3 lg:px-6 lg:text-xl lg:shadow-[0_18px_45px_rgba(186,55,184,0.22)] ${
+              className={`brand-cta mx-auto inline-flex h-12 w-4/5 max-w-[20rem] items-center justify-center gap-2 rounded-xl px-4 text-base font-semibold text-white shadow-none transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-55 lg:mx-0 lg:mt-8 lg:h-[4rem] lg:w-full lg:max-w-none lg:gap-3 lg:px-6 lg:text-lg lg:shadow-[0_18px_45px_rgba(186,55,184,0.2)] ${
                 photo ? "mt-3" : "mt-1"
               }`}
             >
