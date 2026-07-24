@@ -160,6 +160,7 @@ export function DanceStudio() {
   const [playing, setPlaying] = useState(true);
   const [muted, setMuted] = useState(true);
   const [photoSheetOpen, setPhotoSheetOpen] = useState(false);
+  const [videoSheetOpen, setVideoSheetOpen] = useState(false);
   const [photo, setPhoto] = useState<ReadyAsset | null>(null);
   const [customVideo, setCustomVideo] = useState<ReadyAsset | null>(null);
   const [photoUploading, setPhotoUploading] = useState(false);
@@ -282,6 +283,10 @@ export function DanceStudio() {
 
   function openCustomVideoPicker() {
     if (!requireAuth()) return;
+    setVideoSheetOpen(true);
+  }
+
+  function chooseCustomVideo() {
     if (customVideoInputRef.current) customVideoInputRef.current.value = "";
     customVideoInputRef.current?.click();
   }
@@ -394,6 +399,7 @@ export function DanceStudio() {
       });
       previewUrl = null;
       setPlaying(true);
+      setVideoSheetOpen(false);
       toast.success(t("dance.videoReady"), t("dance.videoReadyHint"));
     } catch (error) {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -572,7 +578,9 @@ export function DanceStudio() {
               <button
                 type="button"
                 onClick={() => setPlaying((current) => !current)}
-                className="absolute bottom-5 left-5 z-20 inline-flex size-12 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:bottom-[10.5rem] lg:left-6"
+                className={`absolute bottom-5 left-5 z-20 inline-flex size-12 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:left-6 ${
+                  customVideo ? "lg:bottom-[4.5rem]" : "lg:bottom-[10.5rem]"
+                }`}
                 aria-label={
                   playing ? t("dance.pauseVideo") : t("dance.playVideo")
                 }
@@ -587,7 +595,9 @@ export function DanceStudio() {
               <button
                 type="button"
                 onClick={() => setMuted((current) => !current)}
-                className="absolute bottom-5 right-5 z-20 inline-flex size-12 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:bottom-[10.5rem] lg:right-6"
+                className={`absolute bottom-5 right-5 z-20 inline-flex size-12 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-xl transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white lg:right-6 ${
+                  customVideo ? "lg:bottom-[4.5rem]" : "lg:bottom-[10.5rem]"
+                }`}
                 aria-label={muted ? t("dance.unmuteVideo") : t("dance.muteVideo")}
               >
                 {muted ? (
@@ -689,8 +699,13 @@ export function DanceStudio() {
               <div className="mx-auto h-1 w-[58%] max-w-[14rem] rounded-full bg-gradient-to-r from-[#7747ec] via-[#d83eb6] to-[#ef6690] lg:max-w-[18rem]" />
             </div>
           ) : (
-            <p className="px-5 pt-5 text-center text-sm text-zinc-400 lg:hidden">
-              {t("dance.customSelected")}
+            <p
+              className={`flex items-center justify-center gap-1.5 px-5 pt-5 text-center text-sm lg:hidden ${
+                photo ? "font-medium text-emerald-300" : "text-zinc-400"
+              }`}
+            >
+              {photo ? <IconCheck className="size-4" stroke={2.2} /> : null}
+              {photo ? t("dance.motionReady") : t("dance.customSelected")}
             </p>
           )}
 
@@ -712,10 +727,14 @@ export function DanceStudio() {
               {t("dance.eyebrow")}
             </div>
             <h1 className="mt-5 hidden text-4xl font-semibold leading-[0.98] tracking-[-0.055em] text-white sm:text-5xl lg:block lg:text-[clamp(3.2rem,4vw,5rem)]">
-              {t("dance.title")}
+              {customVideo ? t("dance.customTitle") : t("dance.title")}
             </h1>
             <p className="mt-6 hidden text-base leading-7 text-zinc-400 sm:text-lg lg:block">
-              {t("dance.subtitle")}
+              {customVideo
+                ? photo
+                  ? t("dance.customReadySubtitle")
+                  : t("dance.customSubtitle")
+                : t("dance.subtitle")}
             </p>
             <div className="mt-4 hidden items-center justify-center gap-2 text-sm text-zinc-400 sm:text-base lg:flex lg:justify-start">
               <IconClock className="size-4 shrink-0" stroke={1.8} />
@@ -743,7 +762,29 @@ export function DanceStudio() {
                   {selectedIndex + 1} / {templates.length}
                 </span>
               </div>
-            ) : null}
+            ) : (
+              <div className="mt-7 hidden items-center gap-3 border-y border-white/[0.08] py-3 lg:flex">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-[#c448bc]/25 bg-[#c448bc]/10 text-[#e86bbf]">
+                  <IconVideo className="size-5" stroke={2} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[0.68rem] font-medium uppercase tracking-[0.14em] text-zinc-500">
+                    {t("dance.yourMotionVideo")}
+                  </p>
+                  <p className="mt-0.5 truncate text-sm font-medium text-zinc-200">
+                    {customVideo.name}
+                  </p>
+                </div>
+                <span
+                  className={`inline-flex items-center gap-1.5 text-xs font-medium ${
+                    photo ? "text-emerald-300" : "text-[#df71c7]"
+                  }`}
+                >
+                  {photo ? <IconCheck className="size-3.5" stroke={2.2} /> : null}
+                  {photo ? t("dance.motionReady") : t("dance.nextAddPhoto")}
+                </span>
+              </div>
+            )}
 
             {photo ? (
               <div className="mt-9 rounded-2xl border border-white/[0.1] bg-white/[0.035] p-4 text-left">
@@ -790,7 +831,14 @@ export function DanceStudio() {
                 <IconSparkles className="size-6" stroke={2} />
               ) : (
                 <>
-                  <IconUpload className="hidden size-6 lg:block" stroke={2} />
+                  {customVideo ? (
+                    <IconPhoto className="hidden size-6 lg:block" stroke={2} />
+                  ) : (
+                    <IconArrowRight
+                      className="hidden size-6 lg:block"
+                      stroke={2.1}
+                    />
+                  )}
                   <IconArrowRight
                     className="order-last size-6 lg:hidden"
                     stroke={2.1}
@@ -801,7 +849,9 @@ export function DanceStudio() {
                 ? t("dance.starting")
                 : photo
                   ? `${t("dance.generate")} · ${credits} ${t("dance.credits")}`
-                  : <><span className="lg:hidden">{t("dance.useThisDance")}</span><span className="hidden lg:inline">{t("dance.uploadPhoto")}</span></>}
+                  : customVideo
+                    ? t("dance.addPhoto")
+                    : t("dance.useThisDance")}
             </button>
 
             <button
@@ -819,7 +869,9 @@ export function DanceStudio() {
                   ? t("dance.uploadingVideo")
                   : customVideo
                     ? t("dance.replaceOwnVideo")
-                    : t("dance.useOwnVideo")}
+                    : photo
+                      ? t("dance.useOwnMotionVideo")
+                      : t("dance.useOwnVideo")}
               </span>
             </button>
             {customVideo ? (
@@ -916,6 +968,90 @@ export function DanceStudio() {
             </button>
             <p className="mt-4 text-center text-xs text-zinc-600">
               {t("dance.photoFormats")}
+            </p>
+            <p className="mt-2 text-center text-xs leading-5 text-zinc-600">
+              {t("dance.consent")}
+            </p>
+          </section>
+        </div>
+      ) : null}
+
+      {videoSheetOpen ? (
+        <div
+          className="fixed inset-0 z-[90] flex items-end bg-black/75 p-3 backdrop-blur-sm sm:items-center sm:justify-center sm:p-6"
+          role="presentation"
+          onMouseDown={() => !videoUploading && setVideoSheetOpen(false)}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dance-video-title"
+            className="w-full max-w-md rounded-3xl border border-white/[0.12] bg-[#121214] p-5 shadow-2xl shadow-black/70 sm:p-7"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-5">
+              <div className="flex size-11 items-center justify-center rounded-xl border border-[#c448bc]/25 bg-[#c448bc]/10 text-[#e86bbf]">
+                <IconVideo className="size-5" stroke={2} />
+              </div>
+              <button
+                type="button"
+                onClick={() => setVideoSheetOpen(false)}
+                disabled={videoUploading}
+                className="inline-flex size-9 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-white/[0.07] hover:text-white disabled:opacity-40"
+                aria-label={t("dance.closeVideoSheet")}
+              >
+                <IconX className="size-4" stroke={2} />
+              </button>
+            </div>
+
+            <h2
+              id="dance-video-title"
+              className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-white"
+            >
+              {t("dance.videoSheetTitle")}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">
+              {t("dance.videoSheetSubtitle")}
+            </p>
+
+            {photo ? (
+              <div className="mt-5 flex items-center gap-3 rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.06] p-4 text-sm leading-6 text-zinc-300">
+                <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/10 text-emerald-300">
+                  <IconCheck className="size-4" stroke={2.3} />
+                </span>
+                <p>
+                  <span className="font-medium text-emerald-300">
+                    {t("dance.photoReady")}
+                  </span>{" "}
+                  {t("dance.videoSheetPhotoReady")}
+                </p>
+              </div>
+            ) : (
+              <div className="mt-5 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4 text-sm leading-6 text-zinc-300">
+                <span className="font-medium text-white">
+                  {t("dance.nextLabel")}
+                </span>{" "}
+                {t("dance.videoSheetNext")}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={chooseCustomVideo}
+              disabled={videoUploading}
+              className="brand-cta mt-7 inline-flex h-14 w-full items-center justify-center gap-2.5 rounded-xl px-5 text-base font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-55"
+            >
+              {videoUploading ? (
+                <span className="size-5 animate-spin rounded-full border-2 border-white/35 border-t-white" />
+              ) : (
+                <IconUpload className="size-5" stroke={2} />
+              )}
+              {videoUploading
+                ? t("dance.uploadingVideo")
+                : t("dance.chooseVideo")}
+            </button>
+            <p className="mt-4 text-center text-xs text-zinc-600">
+              {t("dance.videoFormats")}
             </p>
             <p className="mt-2 text-center text-xs leading-5 text-zinc-600">
               {t("dance.consent")}

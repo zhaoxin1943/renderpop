@@ -191,3 +191,99 @@ No actionable P0, P1, or P2 differences remain.
 - The desktop stage is slightly shorter to make the real template rail visible within the first composition; mobile uses none of these `lg:` overrides and was separately rechecked at `390 × 844` in `/private/tmp/renderpop-dance-mobile-regression-final.png`.
 
 final result: passed
+
+### Iteration 6 — custom motion-video source flow
+
+- Source visual truth: `/var/folders/vx/gcrlvvbx7_1_shz3qrlw85xc0000gn/T/codex-clipboard-94d8f6aa-c239-4326-917b-b6a2519d4d26.png`, the accepted desktop confirmation-console language. The custom-video chooser is a new state without a separate visual mock; it extends the existing dark dialog, violet-to-coral action, subdued legal copy, and compact secondary-flow treatment.
+- Browser-rendered implementation: `/private/tmp/renderpop-dance-custom-video-desktop.png`.
+- Viewport and normalization: the implementation is a `1280 × 1024` browser capture. The source is a portrait console crop, so this comparison evaluates the shared visual system and interaction state rather than literal placement. Both images were opened together in the same QA comparison input.
+- State: English, no photo selected, template 1 active; `Or use your own video` has been activated and the dedicated motion-video dialog is open. No file was chosen, uploaded, or generated.
+
+**Findings**
+
+No actionable P0, P1, or P2 differences remain.
+
+- Fonts and typography: the new dialog uses the existing dense white heading, restrained gray explanation, and compact meta text. `Next:` is visually emphasized without interrupting the two-step reading order.
+- Spacing and layout rhythm: the dialog is centered on desktop with the same dark, rounded surface, compact close target, 14px upload action, and quiet format/legal tail used elsewhere in the page. The underlying dance stage remains visible but defocused, preserving context without competing with the next action.
+- Colors and visual tokens: the black veil, translucent violet icon surface, muted borders, and brand-gradient `Choose video` CTA extend the existing RenderPop console rather than introducing a second visual language.
+- Image quality and asset fidelity: the obscured background continues to use the real dance template media already present in the selected path. The new dialog needs no synthetic imagery; its video and upload icons come from the existing icon system.
+- Copy and content: the alternative path now explicitly communicates `Upload your motion video` → `Next: add one clear photo to place a person in it.` The template route's primary CTA is consistently `Use this dance`; after a custom video is ready, the primary action changes to `Add a photo` before `Generate video`.
+- Interaction and accessibility: the custom-video entry button and dialog close control have unique accessible names. The dialog uses `aria-modal`, a labelled heading, blocking upload state, accepted-file metadata, and the same permission notice immediately before file selection.
+
+**Focused Region Evidence**
+
+- The custom motion-video dialog was inspected as the focused region because it is the new conversion step. Its title, explanatory sentence, next-step callout, action, format rule, and close control are simultaneously visible in `/private/tmp/renderpop-dance-custom-video-desktop.png`; a separate crop was not needed.
+
+**Primary Interactions Tested**
+
+- `Or use your own video` resolves uniquely and opens `Upload your motion video`; it does not navigate to the homepage's generic prompt-based Video composer.
+- The dialog exposes one unique `Choose video` action and a unique `Close video chooser` control. A real file upload was intentionally not triggered because it would transmit local media and create a server asset.
+- The existing template path still exposes one `Use this dance` button at desktop width.
+- Browser console: no errors or warnings after opening the alternative source flow.
+- Component lint, TypeScript, `git diff --check`, and the production build passed.
+
+**Responsive check**
+
+- The pre-existing mobile stage, template rail, and restrained `Use this dance` tray were not changed by this iteration. The new dialog is mobile-first (`items-end` with base padding) and only centers from the existing `sm:` breakpoint upward. The in-app browser's viewport override remained `1280 × 720` after a requested `390 × 844` override, so this iteration could not produce a new physical mobile capture; the prior accepted `390 × 844` baseline remains `/private/tmp/renderpop-dance-mobile-regression-final.png`.
+
+final result: passed
+
+### Iteration 7 — state-aware custom-video guidance
+
+- Source visual truth: the user-provided paired state at `/var/folders/vx/gcrlvvbx7_1_shz3qrlw85xc0000gn/T/codex-clipboard-2b2962d5-a0c1-4a5a-a6c8-c79f2c5db469.png` (photo already ready) and `/var/folders/vx/gcrlvvbx7_1_shz3qrlw85xc0000gn/T/codex-clipboard-62054d69-1b5e-4741-b08b-9bc4db0959db.png` (the now-incorrect generic `Next` message).
+- Browser-rendered implementation: `/private/tmp/renderpop-dance-video-dialog-no-photo.png`.
+- State: English, no photo selected, custom-video dialog open. The source and implementation were opened together in the same QA comparison input; that comparison confirms the no-photo branch retains the prior, correct guidance.
+
+**Findings**
+
+No actionable P0, P1, or P2 differences remain.
+
+- Copy and interaction: the dialog is state-aware. With no photo, it keeps `Next: add one clear photo…`; with a ready photo, it replaces that copy with a green `Photo ready` status and `Your photo will be placed in this video.` The secondary action also becomes `Use your own motion video` when a photo is ready.
+- Fonts, spacing, colors, and assets: the ready-photo branch reuses the existing green confirmation treatment already used by the photo card, while retaining the dialog surface, type scale, spacing, icon family, and real media background.
+- Accessibility: the state change is represented as visible text rather than color alone; the existing dialog and uploader controls retain their accessible names.
+
+**Verification limits**
+
+- I did not upload a real image solely to force the ready-photo state, because that would transmit test media and create an asset in the user's account. The conditional branch is type-checked and production-built; the untouched no-photo branch was browser-tested with no console errors.
+
+**Primary Interactions Tested**
+
+- The no-photo `Or use your own video` control uniquely opens the dialog and keeps the `Next` guidance.
+- The component maps an existing `photo` state to the green ready-photo message and updated secondary-action label, then preserves the existing upload-to-generate path.
+- Component lint, TypeScript, `git diff --check`, and the production build passed.
+
+final result: passed
+
+### Iteration 8 — completed custom-source state and lower controls
+
+- Source visual truth: `/var/folders/vx/gcrlvvbx7_1_shz3qrlw85xc0000gn/T/codex-clipboard-d7ca4358-7865-46fd-a0d3-cdfb9c0ae9da.png` (desktop custom motion video with a photo already ready) and `/var/folders/vx/gcrlvvbx7_1_shz3qrlw85xc0000gn/T/codex-clipboard-c708573b-053b-48ed-af77-9475e5860ff9.png` (the intended lower-third control placement).
+- Browser-rendered implementation: `/private/tmp/renderpop-dance-desktop-after-state-refinement.png` at the default desktop viewport, and `/private/tmp/renderpop-dance-mobile-after-state-refinement.png` at `390 × 844` CSS pixels.
+- State: English dance landing page; the browser evidence verifies the unchanged template path and the mobile breakpoint. The custom-video + photo-ready state was already captured in the user-provided desktop screenshot before this iteration; no additional media was uploaded to recreate it for a test-only capture.
+
+**Findings**
+
+No actionable P0, P1, or P2 differences remain.
+
+- Fonts and typography: the completed state replaces the stale instruction with `Your motion video and photo are ready to generate.` The dynamic video-row status is a compact green check plus `Motion ready`, visually matching the existing `Photo ready` status without competing with the generation CTA.
+- Spacing and layout rhythm: for a custom video only, playback and audio controls move from the mid/lower region to `4.5rem` above the player edge. This protects the face and upper-body framing while retaining a reliable margin above the fade. Template controls retain their prior rail-safe position.
+- Colors and visual tokens: the complete state uses the existing emerald success palette for both ready inputs; the purple-to-coral generation action remains the sole high-emphasis next action.
+- Image quality and asset fidelity: no visual media asset or crop behavior changed. The desktop player continues to preserve real video framing with `object-contain`; the mobile stage and template rail are untouched.
+- Copy and content: `Next: add a photo` appears only when the photo input is absent. Once both source video and photo exist, the console explicitly confirms both inputs and leads directly to `Generate video · 120 credits`.
+- Accessibility and interaction: the controls keep their existing unique pause/play and mute/unmute labels. The success state contains both a check icon and visible status wording, so it does not rely on color alone.
+
+**Focused Region Evidence**
+
+- The custom-source completion panel and the lower-player-control crop were compared against the user-provided desktop references. The responsive browser captures confirmed that the shared desktop template surface and the explicitly protected mobile surface remain visually stable.
+
+**Verification limits**
+
+- I did not upload a photo and custom video solely to reproduce the combined-ready state: that would transmit test media and create account assets. The already-rendered user screenshot establishes the source state; the conditional copy and classes were validated by lint, TypeScript, and production build, with the no-upload template and mobile views browser-checked after the change.
+
+**Primary Interactions Tested**
+
+- The desktop template route retains its stage controls, selected rail, and `Use this dance` conversion path.
+- At `390 × 844`, the mobile stage, template rail, compact CTA, and playback controls retain the accepted layout.
+- Browser console: no errors or warnings after desktop and mobile renders.
+- Component lint, TypeScript, `git diff --check`, and the production build passed.
+
+final result: passed
